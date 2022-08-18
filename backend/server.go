@@ -9,9 +9,11 @@ import (
 	"github.com/99designs/gqlgen/graphql/playground"
 	"github.com/gorilla/mux"
 	"github.com/vitountariady/TPA-WEB/config"
+	"github.com/vitountariady/TPA-WEB/directives"
 	"github.com/vitountariady/TPA-WEB/graph"
 	"github.com/vitountariady/TPA-WEB/graph/generated"
 	"github.com/vitountariady/TPA-WEB/graph/model"
+	"github.com/vitountariady/TPA-WEB/middleware"
 )
 
 const defaultPort = "8080"
@@ -40,12 +42,16 @@ func main() {
 	db := config.GetDB()
 	db.AutoMigrate(&model.User{})
 
-	srv := handler.NewDefaultServer(generated.NewExecutableSchema(generated.Config{Resolvers: &graph.Resolver{
+	c := generated.Config{Resolvers: &graph.Resolver{
 		DB: db,
-	}}))
+	}}
+	c.Directives.Auth = directives.Auth
+
+	srv := handler.NewDefaultServer(generated.NewExecutableSchema(c))
 
 	router := mux.NewRouter()
 	router.Use(MyCors)
+	router.Use(middleware.AuthMiddleware)
 	router.Handle("/", playground.Handler("GraphQL playground", "/query"))
 	router.Handle("/query", srv)
 

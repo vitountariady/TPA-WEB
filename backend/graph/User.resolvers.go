@@ -27,6 +27,11 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
+// TestMiddleware is the resolver for the testMiddleware field.
+func (r *queryResolver) TestMiddleware(ctx context.Context) (string, error) {
+	return "Success", nil
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 

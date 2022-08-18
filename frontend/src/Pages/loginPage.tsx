@@ -13,10 +13,12 @@ export default function LoginPage(){
                     email: (document.getElementById("email") as HTMLInputElement).value,
                     password: (document.getElementById("password") as HTMLInputElement).value}
             }
-        ).then(()=>{
-            console.log("sudah login")
+        ).then((x)=>{
+            // console.log("sudah login")
+            console.log(x.data);
+            navigate('/home')
         }).catch((err)=>{
-            console.log("tidak bisa login")
+            // console.log("tidak bisa login")
         })
     }
 

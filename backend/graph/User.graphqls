@@ -17,6 +17,7 @@ type User{
 
 type Query{
   Users: [User!]!
+  testMiddleware: String! @auth
 }
 
 type Mutation{

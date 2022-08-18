@@ -17,18 +17,15 @@ func RegisterUser(ctx context.Context, input model.NewUser) (interface{}, error)
 		}
 	}
 
-	createdUser, err := UserCreate(ctx, input)
+	_, err = UserCreate(ctx, input)
 	if err != nil {
 		return nil, err
 	}
-	token, err := JwtGenerate(ctx, createdUser.ID)
 
 	if err != nil {
 		return nil, err
 	}
-	return map[string]interface{}{
-		"token": token,
-	}, nil
+	return map[string]interface{}{}, nil
 }
 
 func UserLogin(ctx context.Context, email string, password string) (interface{}, error) {
@@ -41,6 +38,11 @@ func UserLogin(ctx context.Context, email string, password string) (interface{},
 		}
 		return nil, err
 	}
+
+	if getUser.Activated == false {
+		return nil, nil
+	}
+
 	if err := tools.ComparePassword(getUser.Password, password); err != nil {
 		return nil, err
 	}
@@ -50,5 +52,6 @@ func UserLogin(ctx context.Context, email string, password string) (interface{},
 	}
 	return map[string]interface{}{
 		"token": token,
+		"user":  getUser,
 	}, nil
 }
