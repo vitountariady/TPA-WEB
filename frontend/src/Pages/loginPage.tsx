@@ -2,8 +2,10 @@ import { Link, Navigate, useNavigate } from 'react-router-dom'
 import '../StyleSheet/style.scss'
 import { Login } from '../../queries/userQueries'
 import { useMutation } from '@apollo/client';
+import { UserAuth } from '../../contexts/authContext';
 
 export default function LoginPage(){
+    const userContext = UserAuth();
     const [loginUser] = useMutation(Login);
     const navigate = useNavigate();
     const login = () =>{
@@ -15,7 +17,8 @@ export default function LoginPage(){
             }
         ).then((x)=>{
             // console.log("sudah login")
-            console.log(x.data);
+            console.log(x.data.Login.user)
+            userContext.setUser(x.data.Login.user)
             navigate('/home')
         }).catch((err)=>{
             // console.log("tidak bisa login")
