@@ -11,3 +11,18 @@ export const Login = gql`
     Login(email:$email, password:$password)
   }
 `
+
+export const Activate = gql`
+  mutation ActivateAccount ($id:ID!){
+  ActivateAccount(id:$id)
+}
+`
+
+export const GetLink = gql`
+  query getLink ($id:String!){
+  getLink(id:$id){
+    id,
+    userID
+  }
+}
+`

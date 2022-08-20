@@ -23,6 +23,7 @@ type Query{
 type Mutation{
   Login(email: String!, password:String!): Any!
   Register(input:newUser!):Any!
+  ActivateAccount(id:ID!):Any!
 }
 
 input newUser{

@@ -22,6 +22,20 @@ func (r *mutationResolver) Register(ctx context.Context, input model.NewUser) (i
 	return service.RegisterUser(ctx, input)
 }
 
+// ActivateAccount is the resolver for the ActivateAccount field.
+func (r *mutationResolver) ActivateAccount(ctx context.Context, id string) (interface{}, error) {
+	user := new(model.User)
+	link := new(model.ActivationLink)
+	if err := r.DB.First(user, "id=?", id).Error; err != nil {
+		panic(err)
+	}
+	user.Activated = true
+	if err := r.DB.Delete(link, "user_id=?", id).Error; err != nil {
+		panic(err)
+	}
+	return user, r.DB.Save(user).Error
+}
+
 // Users is the resolver for the Users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	panic(fmt.Errorf("not implemented"))

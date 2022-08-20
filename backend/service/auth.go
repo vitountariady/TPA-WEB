@@ -17,14 +17,18 @@ func RegisterUser(ctx context.Context, input model.NewUser) (interface{}, error)
 		}
 	}
 
-	_, err = UserCreate(ctx, input)
+	createdUser, err := UserCreate(ctx, input)
 	if err != nil {
 		return nil, err
 	}
 
+	link, err := ActivationLinkCreate(ctx, createdUser.ID)
+
 	if err != nil {
 		return nil, err
 	}
+
+	sendActivationEmail(createdUser.Email, link)
 	return map[string]interface{}{}, nil
 }
 

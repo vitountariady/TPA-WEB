@@ -1,10 +1,15 @@
-import React from 'react'
+import React, { useState } from 'react'
 import {AiFillHome, AiFillMessage} from 'react-icons/ai'
 import {BsPeopleFill, BsLinkedin, BsPersonCircle} from 'react-icons/bs'
 import {FaSuitcase} from 'react-icons/fa'
 import {IoMdNotifications} from 'react-icons/io'
 import { NavLink } from 'react-router-dom'
+import { UserAuth } from '../../contexts/authContext'
 export default function Navbar() {
+
+  const userContext = UserAuth();
+
+  const [Dropdown, setDropdown] = useState(false);
 
   const handleActivePage = (state:any) =>{
     if(state.isActive){
@@ -12,6 +17,10 @@ export default function Navbar() {
     }else{
       return 'navbar-items'
     }
+  }
+
+  const logout = () =>{
+    userContext.setUser({});
   }
 
   return (
@@ -40,9 +49,18 @@ export default function Navbar() {
           <IoMdNotifications className='navbar-icon'></IoMdNotifications>
           <h6 className='item-label'>Notifications</h6>
         </NavLink>
-        <NavLink to='/profile' className= {handleActivePage}>
+        {/* <NavLink to='/profile' className= {handleActivePage}>
           <BsPersonCircle className='navbar-icon'></BsPersonCircle>
           <h6 className='item-label'>Profile</h6>
+        </NavLink> */}
+        <NavLink to='/profile' onMouseEnter={()=>{setDropdown(true)}} onMouseLeave={()=>{setDropdown(false)}} className= {handleActivePage}>
+          <BsPersonCircle className='navbar-icon'></BsPersonCircle>
+          <h6 className='item-label'>Profile</h6>
+          {Dropdown && (
+            <div className='dropdown'>
+              <div onClick={logout}>Logout</div>
+            </div>
+          )}
         </NavLink>
       </div>
     </div>

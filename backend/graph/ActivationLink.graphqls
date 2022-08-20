@@ -1,0 +1,12 @@
+type ActivationLink{
+    id: ID!
+    userID: String!
+}
+
+extend type Query{
+    getLink(id:String!): ActivationLink!
+}
+
+extend type Mutation{
+    createActivationLink(userID: String!): ActivationLink!
+}

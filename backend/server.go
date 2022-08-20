@@ -41,6 +41,7 @@ func main() {
 	//Auto Migrations
 	db := config.GetDB()
 	db.AutoMigrate(&model.User{})
+	db.AutoMigrate(&model.ActivationLink{})
 
 	c := generated.Config{Resolvers: &graph.Resolver{
 		DB: db,
