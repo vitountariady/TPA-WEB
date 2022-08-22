@@ -25,7 +25,7 @@ func (r *mutationResolver) Register(ctx context.Context, input model.NewUser) (i
 // ActivateAccount is the resolver for the ActivateAccount field.
 func (r *mutationResolver) ActivateAccount(ctx context.Context, id string) (interface{}, error) {
 	user := new(model.User)
-	link := new(model.ActivationLink)
+	link := new(model.Link)
 	if err := r.DB.First(user, "id=?", id).Error; err != nil {
 		panic(err)
 	}
@@ -34,6 +34,11 @@ func (r *mutationResolver) ActivateAccount(ctx context.Context, id string) (inte
 		panic(err)
 	}
 	return user, r.DB.Save(user).Error
+}
+
+// ResetPassword is the resolver for the ResetPassword field.
+func (r *mutationResolver) ResetPassword(ctx context.Context, id string, newPassword string) (string, error) {
+	return service.ResetPassword(ctx, id, newPassword)
 }
 
 // Users is the resolver for the Users field.

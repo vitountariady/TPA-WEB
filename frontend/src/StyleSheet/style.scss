@@ -10,9 +10,13 @@ $grey: rgb(120, 100, 100);
 .text-black{
     color: $black;
 }
-h2{
-    font-size: 40px;
+.text-blue{
+    color: $blue;
 }
+h2{
+    font-size: 35px;
+}
+
 
 //BG
 .blue-bg{
@@ -227,4 +231,9 @@ h2{
     &:active{
         background-color: $blue-dark;
     }
+}
+
+//margins
+.mb-10{
+    margin-bottom: 10px;
 }

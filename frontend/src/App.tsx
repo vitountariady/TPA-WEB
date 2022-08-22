@@ -10,6 +10,8 @@ import AuthContextProvider from '../contexts/authContext'
 import {ProtectedRoute, UnprotectedRoute} from '../contexts/middleware'
 import { Activate } from '../queries/userQueries'
 import ActivationPage from './Pages/ActivationPage'
+import ForgotPasswordPage from './Pages/ForgotPasswordPage'
+import ResetPasswordPage from './Pages/ResetPassword'
 
 const Protected = () =>{
   return(
@@ -35,6 +37,8 @@ function App() {
         <Route element={<Unprotected/>}>
           <Route path="/" element={<LoginPage></LoginPage>}></Route>
           <Route path="/register" element={<RegisterPage></RegisterPage>}></Route>
+          <Route path="/forgotPassword" element={<ForgotPasswordPage></ForgotPasswordPage>}></Route>
+          <Route path="/resetPassword/:id" element={<ResetPasswordPage></ResetPasswordPage>}></Route>
         </Route>
         <Route element={<Protected/>}>
           <Route path="/home" element={<Homepage></Homepage>}></Route>

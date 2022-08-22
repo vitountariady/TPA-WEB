@@ -26,3 +26,15 @@ export const GetLink = gql`
   }
 }
 `
+
+export const sendResetPassLink = gql`
+  mutation sendResetPassLink ($email: String!){
+    generateResetPassLink(userEmail:$email)
+  }
+`
+
+export const resetPassword = gql`
+  mutation resetPassword($id:String!, $newpass:String!){
+    ResetPassword(id:$id, newPassword:$newpass)
+  }
+`

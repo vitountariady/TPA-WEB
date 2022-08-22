@@ -45,16 +45,18 @@ type DirectiveRoot struct {
 }
 
 type ComplexityRoot struct {
-	ActivationLink struct {
+	Link struct {
 		ID     func(childComplexity int) int
 		UserID func(childComplexity int) int
 	}
 
 	Mutation struct {
-		ActivateAccount      func(childComplexity int, id string) int
-		CreateActivationLink func(childComplexity int, userID string) int
-		Login                func(childComplexity int, email string, password string) int
-		Register             func(childComplexity int, input model.NewUser) int
+		ActivateAccount       func(childComplexity int, id string) int
+		CreateLink            func(childComplexity int, userID string) int
+		GenerateResetPassLink func(childComplexity int, userEmail string) int
+		Login                 func(childComplexity int, email string, password string) int
+		Register              func(childComplexity int, input model.NewUser) int
+		ResetPassword         func(childComplexity int, id string, newPassword string) int
 	}
 
 	Query struct {
@@ -77,12 +79,14 @@ type MutationResolver interface {
 	Login(ctx context.Context, email string, password string) (interface{}, error)
 	Register(ctx context.Context, input model.NewUser) (interface{}, error)
 	ActivateAccount(ctx context.Context, id string) (interface{}, error)
-	CreateActivationLink(ctx context.Context, userID string) (*model.ActivationLink, error)
+	ResetPassword(ctx context.Context, id string, newPassword string) (string, error)
+	CreateLink(ctx context.Context, userID string) (*model.Link, error)
+	GenerateResetPassLink(ctx context.Context, userEmail string) (interface{}, error)
 }
 type QueryResolver interface {
 	Users(ctx context.Context) ([]*model.User, error)
 	TestMiddleware(ctx context.Context) (string, error)
-	GetLink(ctx context.Context, id string) (*model.ActivationLink, error)
+	GetLink(ctx context.Context, id string) (*model.Link, error)
 }
 
 type executableSchema struct {
@@ -100,19 +104,19 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 	_ = ec
 	switch typeName + "." + field {
 
-	case "ActivationLink.id":
-		if e.complexity.ActivationLink.ID == nil {
+	case "Link.id":
+		if e.complexity.Link.ID == nil {
 			break
 		}
 
-		return e.complexity.ActivationLink.ID(childComplexity), true
+		return e.complexity.Link.ID(childComplexity), true
 
-	case "ActivationLink.userID":
-		if e.complexity.ActivationLink.UserID == nil {
+	case "Link.userID":
+		if e.complexity.Link.UserID == nil {
 			break
 		}
 
-		return e.complexity.ActivationLink.UserID(childComplexity), true
+		return e.complexity.Link.UserID(childComplexity), true
 
 	case "Mutation.ActivateAccount":
 		if e.complexity.Mutation.ActivateAccount == nil {
@@ -126,17 +130,29 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.ActivateAccount(childComplexity, args["id"].(string)), true
 
-	case "Mutation.createActivationLink":
-		if e.complexity.Mutation.CreateActivationLink == nil {
+	case "Mutation.createLink":
+		if e.complexity.Mutation.CreateLink == nil {
 			break
 		}
 
-		args, err := ec.field_Mutation_createActivationLink_args(context.TODO(), rawArgs)
+		args, err := ec.field_Mutation_createLink_args(context.TODO(), rawArgs)
 		if err != nil {
 			return 0, false
 		}
 
-		return e.complexity.Mutation.CreateActivationLink(childComplexity, args["userID"].(string)), true
+		return e.complexity.Mutation.CreateLink(childComplexity, args["userID"].(string)), true
+
+	case "Mutation.generateResetPassLink":
+		if e.complexity.Mutation.GenerateResetPassLink == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_generateResetPassLink_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.GenerateResetPassLink(childComplexity, args["userEmail"].(string)), true
 
 	case "Mutation.Login":
 		if e.complexity.Mutation.Login == nil {
@@ -161,6 +177,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.Register(childComplexity, args["input"].(model.NewUser)), true
+
+	case "Mutation.ResetPassword":
+		if e.complexity.Mutation.ResetPassword == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_ResetPassword_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.ResetPassword(childComplexity, args["id"].(string), args["newPassword"].(string)), true
 
 	case "Query.getLink":
 		if e.complexity.Query.GetLink == nil {
@@ -299,17 +327,18 @@ func (ec *executionContext) introspectType(name string) (*introspection.Type, er
 }
 
 var sources = []*ast.Source{
-	{Name: "../ActivationLink.graphqls", Input: `type ActivationLink{
+	{Name: "../Link.graphqls", Input: `type Link{
     id: ID!
     userID: String!
 }
 
 extend type Query{
-    getLink(id:String!): ActivationLink!
+    getLink(id:String!): Link!
 }
 
 extend type Mutation{
-    createActivationLink(userID: String!): ActivationLink!
+    createLink(userID: String!): Link!
+    generateResetPassLink(userEmail:String!):Any!
 }`, BuiltIn: false},
 	{Name: "../User.graphqls", Input: `# GraphQL schema example
 #
@@ -337,6 +366,7 @@ type Mutation{
   Login(email: String!, password:String!): Any!
   Register(input:newUser!):Any!
   ActivateAccount(id:ID!):Any!
+  ResetPassword(id: String!, newPassword:String!):String!
 }
 
 input newUser{
@@ -406,7 +436,31 @@ func (ec *executionContext) field_Mutation_Register_args(ctx context.Context, ra
 	return args, nil
 }
 
-func (ec *executionContext) field_Mutation_createActivationLink_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+func (ec *executionContext) field_Mutation_ResetPassword_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["newPassword"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("newPassword"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["newPassword"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_createLink_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
 	var err error
 	args := map[string]interface{}{}
 	var arg0 string
@@ -418,6 +472,21 @@ func (ec *executionContext) field_Mutation_createActivationLink_args(ctx context
 		}
 	}
 	args["userID"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_generateResetPassLink_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["userEmail"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("userEmail"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["userEmail"] = arg0
 	return args, nil
 }
 
@@ -489,8 +558,8 @@ func (ec *executionContext) field___Type_fields_args(ctx context.Context, rawArg
 
 // region    **************************** field.gotpl *****************************
 
-func (ec *executionContext) _ActivationLink_id(ctx context.Context, field graphql.CollectedField, obj *model.ActivationLink) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ActivationLink_id(ctx, field)
+func (ec *executionContext) _Link_id(ctx context.Context, field graphql.CollectedField, obj *model.Link) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Link_id(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -520,9 +589,9 @@ func (ec *executionContext) _ActivationLink_id(ctx context.Context, field graphq
 	return ec.marshalNID2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ActivationLink_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Link_id(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "ActivationLink",
+		Object:     "Link",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -533,8 +602,8 @@ func (ec *executionContext) fieldContext_ActivationLink_id(ctx context.Context, 
 	return fc, nil
 }
 
-func (ec *executionContext) _ActivationLink_userID(ctx context.Context, field graphql.CollectedField, obj *model.ActivationLink) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_ActivationLink_userID(ctx, field)
+func (ec *executionContext) _Link_userID(ctx context.Context, field graphql.CollectedField, obj *model.Link) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Link_userID(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -564,9 +633,9 @@ func (ec *executionContext) _ActivationLink_userID(ctx context.Context, field gr
 	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_ActivationLink_userID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Link_userID(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
-		Object:     "ActivationLink",
+		Object:     "Link",
 		Field:      field,
 		IsMethod:   false,
 		IsResolver: false,
@@ -742,8 +811,8 @@ func (ec *executionContext) fieldContext_Mutation_ActivateAccount(ctx context.Co
 	return fc, nil
 }
 
-func (ec *executionContext) _Mutation_createActivationLink(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
-	fc, err := ec.fieldContext_Mutation_createActivationLink(ctx, field)
+func (ec *executionContext) _Mutation_ResetPassword(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_ResetPassword(ctx, field)
 	if err != nil {
 		return graphql.Null
 	}
@@ -756,7 +825,7 @@ func (ec *executionContext) _Mutation_createActivationLink(ctx context.Context, 
 	}()
 	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
 		ctx = rctx // use context from middleware stack in children
-		return ec.resolvers.Mutation().CreateActivationLink(rctx, fc.Args["userID"].(string))
+		return ec.resolvers.Mutation().ResetPassword(rctx, fc.Args["id"].(string), fc.Args["newPassword"].(string))
 	})
 	if err != nil {
 		ec.Error(ctx, err)
@@ -768,25 +837,19 @@ func (ec *executionContext) _Mutation_createActivationLink(ctx context.Context, 
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.ActivationLink)
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNActivationLink2ᚖgithubᚗcomᚋvitountariadyᚋTPAᚑWEBᚋgraphᚋmodelᚐActivationLink(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
-func (ec *executionContext) fieldContext_Mutation_createActivationLink(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+func (ec *executionContext) fieldContext_Mutation_ResetPassword(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "Mutation",
 		Field:      field,
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			switch field.Name {
-			case "id":
-				return ec.fieldContext_ActivationLink_id(ctx, field)
-			case "userID":
-				return ec.fieldContext_ActivationLink_userID(ctx, field)
-			}
-			return nil, fmt.Errorf("no field named %q was found under type ActivationLink", field.Name)
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	defer func() {
@@ -796,7 +859,123 @@ func (ec *executionContext) fieldContext_Mutation_createActivationLink(ctx conte
 		}
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
-	if fc.Args, err = ec.field_Mutation_createActivationLink_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+	if fc.Args, err = ec.field_Mutation_ResetPassword_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_createLink(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_createLink(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().CreateLink(rctx, fc.Args["userID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(*model.Link)
+	fc.Result = res
+	return ec.marshalNLink2ᚖgithubᚗcomᚋvitountariadyᚋTPAᚑWEBᚋgraphᚋmodelᚐLink(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_createLink(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			switch field.Name {
+			case "id":
+				return ec.fieldContext_Link_id(ctx, field)
+			case "userID":
+				return ec.fieldContext_Link_userID(ctx, field)
+			}
+			return nil, fmt.Errorf("no field named %q was found under type Link", field.Name)
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_createLink_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_generateResetPassLink(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_generateResetPassLink(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().GenerateResetPassLink(rctx, fc.Args["userEmail"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(interface{})
+	fc.Result = res
+	return ec.marshalNAny2interface(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_generateResetPassLink(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type Any does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_generateResetPassLink_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -951,9 +1130,9 @@ func (ec *executionContext) _Query_getLink(ctx context.Context, field graphql.Co
 		}
 		return graphql.Null
 	}
-	res := resTmp.(*model.ActivationLink)
+	res := resTmp.(*model.Link)
 	fc.Result = res
-	return ec.marshalNActivationLink2ᚖgithubᚗcomᚋvitountariadyᚋTPAᚑWEBᚋgraphᚋmodelᚐActivationLink(ctx, field.Selections, res)
+	return ec.marshalNLink2ᚖgithubᚗcomᚋvitountariadyᚋTPAᚑWEBᚋgraphᚋmodelᚐLink(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Query_getLink(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -965,11 +1144,11 @@ func (ec *executionContext) fieldContext_Query_getLink(ctx context.Context, fiel
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
 			switch field.Name {
 			case "id":
-				return ec.fieldContext_ActivationLink_id(ctx, field)
+				return ec.fieldContext_Link_id(ctx, field)
 			case "userID":
-				return ec.fieldContext_ActivationLink_userID(ctx, field)
+				return ec.fieldContext_Link_userID(ctx, field)
 			}
-			return nil, fmt.Errorf("no field named %q was found under type ActivationLink", field.Name)
+			return nil, fmt.Errorf("no field named %q was found under type Link", field.Name)
 		},
 	}
 	defer func() {
@@ -3212,26 +3391,26 @@ func (ec *executionContext) unmarshalInputnewUser(ctx context.Context, obj inter
 
 // region    **************************** object.gotpl ****************************
 
-var activationLinkImplementors = []string{"ActivationLink"}
+var linkImplementors = []string{"Link"}
 
-func (ec *executionContext) _ActivationLink(ctx context.Context, sel ast.SelectionSet, obj *model.ActivationLink) graphql.Marshaler {
-	fields := graphql.CollectFields(ec.OperationContext, sel, activationLinkImplementors)
+func (ec *executionContext) _Link(ctx context.Context, sel ast.SelectionSet, obj *model.Link) graphql.Marshaler {
+	fields := graphql.CollectFields(ec.OperationContext, sel, linkImplementors)
 	out := graphql.NewFieldSet(fields)
 	var invalids uint32
 	for i, field := range fields {
 		switch field.Name {
 		case "__typename":
-			out.Values[i] = graphql.MarshalString("ActivationLink")
+			out.Values[i] = graphql.MarshalString("Link")
 		case "id":
 
-			out.Values[i] = ec._ActivationLink_id(ctx, field, obj)
+			out.Values[i] = ec._Link_id(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
 		case "userID":
 
-			out.Values[i] = ec._ActivationLink_userID(ctx, field, obj)
+			out.Values[i] = ec._Link_userID(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				invalids++
@@ -3293,10 +3472,28 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
-		case "createActivationLink":
+		case "ResetPassword":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
-				return ec._Mutation_createActivationLink(ctx, field)
+				return ec._Mutation_ResetPassword(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "createLink":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_createLink(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "generateResetPassLink":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_generateResetPassLink(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {
@@ -3805,20 +4002,6 @@ func (ec *executionContext) ___Type(ctx context.Context, sel ast.SelectionSet, o
 
 // region    ***************************** type.gotpl *****************************
 
-func (ec *executionContext) marshalNActivationLink2githubᚗcomᚋvitountariadyᚋTPAᚑWEBᚋgraphᚋmodelᚐActivationLink(ctx context.Context, sel ast.SelectionSet, v model.ActivationLink) graphql.Marshaler {
-	return ec._ActivationLink(ctx, sel, &v)
-}
-
-func (ec *executionContext) marshalNActivationLink2ᚖgithubᚗcomᚋvitountariadyᚋTPAᚑWEBᚋgraphᚋmodelᚐActivationLink(ctx context.Context, sel ast.SelectionSet, v *model.ActivationLink) graphql.Marshaler {
-	if v == nil {
-		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
-			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
-		}
-		return graphql.Null
-	}
-	return ec._ActivationLink(ctx, sel, v)
-}
-
 func (ec *executionContext) unmarshalNAny2interface(ctx context.Context, v interface{}) (interface{}, error) {
 	res, err := graphql.UnmarshalAny(v)
 	return res, graphql.ErrorOnPath(ctx, err)
@@ -3868,6 +4051,20 @@ func (ec *executionContext) marshalNID2string(ctx context.Context, sel ast.Selec
 		}
 	}
 	return res
+}
+
+func (ec *executionContext) marshalNLink2githubᚗcomᚋvitountariadyᚋTPAᚑWEBᚋgraphᚋmodelᚐLink(ctx context.Context, sel ast.SelectionSet, v model.Link) graphql.Marshaler {
+	return ec._Link(ctx, sel, &v)
+}
+
+func (ec *executionContext) marshalNLink2ᚖgithubᚗcomᚋvitountariadyᚋTPAᚑWEBᚋgraphᚋmodelᚐLink(ctx context.Context, sel ast.SelectionSet, v *model.Link) graphql.Marshaler {
+	if v == nil {
+		if !graphql.HasFieldError(ctx, graphql.GetFieldContext(ctx)) {
+			ec.Errorf(ctx, "the requested element is null which the schema does not allow")
+		}
+		return graphql.Null
+	}
+	return ec._Link(ctx, sel, v)
 }
 
 func (ec *executionContext) unmarshalNString2string(ctx context.Context, v interface{}) (string, error) {

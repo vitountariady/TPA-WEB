@@ -1,9 +1,11 @@
 import { useMutation, useQuery } from '@apollo/client'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { Activate, GetLink } from '../../queries/userQueries'
+import Error404Page from './Error404Page'
 
 export default function ActivationPage() {
+    const [Error, setError] = useState(false);
     const [activate] = useMutation(Activate)
     const linkid = useParams().id;
     const navigate = useNavigate();
@@ -15,15 +17,24 @@ export default function ActivationPage() {
 
     useEffect(() => {
         if(!loading){
-            const userid = data.getLink.userID
-            activate({variables:{id:userid}}).then(()=>{
-                console.log("success")
-                navigate('/')
-            })
+            if(error){
+                console.log(error)
+                 setError(true);
+            }else{
+                const userid = data.getLink.userID
+                activate({variables:{id:userid}}).then(()=>{
+                    console.log("success")
+                    navigate('/')
+                })
+            }
         }
     }, [loading])
 
     return (
-        <div></div>
+        <div>
+            {Error===true && (
+                <Error404Page></Error404Page>
+            )}
+        </div>
     )
 }

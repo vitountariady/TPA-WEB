@@ -1,6 +1,6 @@
 package model
 
-type ActivationLink struct {
+type Link struct {
 	ID     string `json:"id" gorm:"primaryKey"`
 	UserID string `json:"userID"`
 }

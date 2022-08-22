@@ -4,10 +4,22 @@ import (
 	"context"
 
 	"github.com/vektah/gqlparser/v2/gqlerror"
+	"github.com/vitountariady/TPA-WEB/config"
 	"github.com/vitountariady/TPA-WEB/graph/model"
 	"github.com/vitountariady/TPA-WEB/tools"
 	"gorm.io/gorm"
 )
+
+func ResetPassword(ctx context.Context, id string, newPassword string) (string, error) {
+	user, err := GetUserById(ctx, id)
+	db := config.GetDB()
+	if err != nil {
+		return "", err
+	}
+	user.Password = tools.HashPassword(newPassword)
+	db.Save(&user)
+	return "Password reset successful", nil
+}
 
 func RegisterUser(ctx context.Context, input model.NewUser) (interface{}, error) {
 	_, err := GetUserByEmail(ctx, input.Email)
@@ -23,12 +35,11 @@ func RegisterUser(ctx context.Context, input model.NewUser) (interface{}, error)
 	}
 
 	link, err := ActivationLinkCreate(ctx, createdUser.ID)
-
 	if err != nil {
 		return nil, err
 	}
 
-	sendActivationEmail(createdUser.Email, link)
+	sendEmail(createdUser.Email, link)
 	return map[string]interface{}{}, nil
 }
 

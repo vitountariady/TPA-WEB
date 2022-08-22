@@ -1,0 +1,13 @@
+type Link{
+    id: ID!
+    userID: String!
+}
+
+extend type Query{
+    getLink(id:String!): Link!
+}
+
+extend type Mutation{
+    createLink(userID: String!): Link!
+    generateResetPassLink(userEmail:String!):Any!
+}

@@ -21,7 +21,7 @@ export default function LoginPage(){
             userContext.setUser(x.data.Login.user)
             navigate('/home')
         }).catch((err)=>{
-            // console.log("tidak bisa login")
+            console.log(err)
         })
     }
 
@@ -35,6 +35,10 @@ export default function LoginPage(){
                 <input id='email' type="email" className='white-bg text-input' placeholder='Email or Phone' />           
                 <input id='password' type="password" className='white-bg text-input' placeholder='Password' />
                 <button onClick={login} className='blue-button'>Sign In</button>  
+                <div className='w-fit flex-row'>
+                    <p className='text-black'>Forgot Password?</p>
+                    <Link className='a' to='/forgotPassword'>Reset Password</Link>
+                </div>          
                 <div className='w-fit flex-row'>
                     <p className='text-black'>New to LinkhedIn?</p>
                     <Link className='a' to='/register'>Sign Up</Link>
