@@ -12,9 +12,13 @@ import (
 
 func ResetPassword(ctx context.Context, id string, newPassword string) (string, error) {
 	user, err := GetUserById(ctx, id)
+	link := new(model.Link)
 	db := config.GetDB()
 	if err != nil {
 		return "", err
+	}
+	if err := db.Delete(link, "user_id=?", id).Error; err != nil {
+		panic(err)
 	}
 	user.Password = tools.HashPassword(newPassword)
 	db.Save(&user)
@@ -39,8 +43,12 @@ func RegisterUser(ctx context.Context, input model.NewUser) (interface{}, error)
 		return nil, err
 	}
 
+	// fmt.Print(link)
+
 	sendEmail(createdUser.Email, link)
-	return map[string]interface{}{}, nil
+	return map[string]interface{}{
+		"id": createdUser.ID,
+	}, nil
 }
 
 func UserLogin(ctx context.Context, email string, password string) (interface{}, error) {
@@ -54,7 +62,7 @@ func UserLogin(ctx context.Context, email string, password string) (interface{},
 		return nil, err
 	}
 
-	if getUser.Activated == false {
+	if !getUser.Activated {
 		return nil, nil
 	}
 

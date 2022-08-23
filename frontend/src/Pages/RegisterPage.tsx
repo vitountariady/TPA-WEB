@@ -18,10 +18,12 @@ export default function RegisterPage(){
                 last_name: (document.getElementById("last_name") as HTMLInputElement).value,
                 password: (document.getElementById("password") as HTMLInputElement).value}
             }
-        ).then(()=>{
+        ).then((x)=>{
+            console.log(x);
             setError(false);
             navigate('/');
         }).catch((err)=>{
+            console.log(err);
            setError(true); 
         });
     }

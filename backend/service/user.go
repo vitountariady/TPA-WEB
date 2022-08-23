@@ -15,12 +15,13 @@ func UserCreate(ctx context.Context, input model.NewUser) (*model.User, error) {
 	input.Password = tools.HashPassword(input.Password)
 
 	user := model.User{
-		ID:        uuid.NewString(),
-		Email:     input.Email,
-		FirstName: input.FirstName,
-		LastName:  input.LastName,
-		Password:  input.Password,
-		Activated: false,
+		ID:                uuid.NewString(),
+		Email:             input.Email,
+		FirstName:         input.FirstName,
+		LastName:          input.LastName,
+		Password:          input.Password,
+		Activated:         false,
+		ProfilePictureURL: "https://firebasestorage.googleapis.com/v0/b/linkhedin-vt.appspot.com/o/profilePictures%2Fdefault.jpg?alt=media&token=140c66e3-a51d-47ae-aaef-00ad043d2bd0",
 	}
 
 	err := db.Model(user).Create(&user).Error

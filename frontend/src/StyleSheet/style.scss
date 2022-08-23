@@ -69,13 +69,15 @@ h2{
     justify-content: center;
     padding-top: 25px;
     .navbar-icon{
-        scale: 170%;
+        width:25px;
+        height: 25px;
+        // border-radius: 100%;
         fill: $grey;
     }
     .item-label{
         color: $grey;
         font-size: 12px;
-        margin: 5px;
+        margin: 3px;
     }
     &:hover{
         .navbar-icon{

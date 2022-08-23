@@ -12,7 +12,8 @@ type User{
   first_name:String!
   last_name:String!
   password:String!
-  Activated: Boolean!
+  activated: Boolean!
+  profile_picture_url: String!
 }
 
 type Query{
