@@ -10,6 +10,17 @@ import (
 	"gorm.io/gorm"
 )
 
+func UploadProfilePicture(ctx context.Context, id string, newProfilePicture string) (string, error) {
+	user, err := GetUserById(ctx, id)
+	db := config.GetDB()
+	if err != nil {
+		return "", err
+	}
+	user.ProfilePictureURL = (newProfilePicture)
+	db.Save(&user)
+	return "Profile Picture Update successful", nil
+}
+
 func ResetPassword(ctx context.Context, id string, newPassword string) (string, error) {
 	user, err := GetUserById(ctx, id)
 	link := new(model.Link)

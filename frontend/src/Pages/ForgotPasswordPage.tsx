@@ -22,8 +22,8 @@ export default function ForgotPasswordPage() {
     <div className="white-bg fullscreen center-all">
             <img src="../assets/logo.png" className='logo' alt="" />
             <div className='form white-bg'>
-                <div className='form-label-container'>
-                    <h2 className='text-black mb-10'>Forgot Password?</h2> 
+                <div className='form-label-container mv-20'>
+                    <h2 className='text-black '>Forgot Password?</h2> 
                 </div>
                 <div className='form-label-container'>
                     <h4 className='text-black'>Reset password in two quick steps</h4> 

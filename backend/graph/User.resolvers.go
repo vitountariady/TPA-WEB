@@ -41,6 +41,11 @@ func (r *mutationResolver) ResetPassword(ctx context.Context, id string, newPass
 	return service.ResetPassword(ctx, id, newPassword)
 }
 
+// UploadProfilePic is the resolver for the UploadProfilePic field.
+func (r *mutationResolver) UploadProfilePic(ctx context.Context, id string, newProfilePicture string) (string, error) {
+	return service.UploadProfilePicture(ctx, id, newProfilePicture)
+}
+
 // Users is the resolver for the Users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	panic(fmt.Errorf("not implemented"))

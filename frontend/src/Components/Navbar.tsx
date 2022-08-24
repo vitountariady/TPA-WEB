@@ -31,31 +31,31 @@ export default function Navbar() {
       <div className='navbar-menu-container'>
         <NavLink to="/home" className= {handleActivePage}>
           <AiFillHome className='navbar-icon'></AiFillHome>
-          <h6 className='item-label'>Home</h6>
+          <p className='item-label'>Home</p>
         </NavLink>
         <NavLink to="/mynetwork" className= {handleActivePage}>
           <BsPeopleFill className='navbar-icon'></BsPeopleFill>
-          <h6 className='item-label'>My Network</h6>
+          <p className='item-label'>My Network</p>
         </NavLink>
         <NavLink to="/jobs" className= {handleActivePage}>
           <FaSuitcase className='navbar-icon'></FaSuitcase>
-          <h6 className='item-label'>Jobs</h6>
+          <p className='item-label'>Jobs</p>
         </NavLink>
         <NavLink to="/messaging" className= {handleActivePage}>
           <AiFillMessage className='navbar-icon'></AiFillMessage>
-          <h6 className='item-label'>Messaging</h6>
+          <p className='item-label'>Messaging</p>
         </NavLink>
         <NavLink to="/notifications" className= {handleActivePage}>
           <IoMdNotifications className='navbar-icon'></IoMdNotifications>
-          <h6 className='item-label'>Notifications</h6>
+          <p className='item-label'>Notifications</p>
         </NavLink>
         {/* <NavLink to='/profile' className= {handleActivePage}>
           <BsPersonCircle className='navbar-icon'></BsPersonCircle>
-          <h6 className='item-label'>Profile</h6>
+          <p className='item-label'>Profile</p>
         </NavLink> */}
         <NavLink to='/profile' onMouseEnter={()=>{setDropdown(true)}} onMouseLeave={()=>{setDropdown(false)}} className= {handleActivePage}>
-          <img src={userContext.user.profile_picture} className='navbar-icon'></img>
-          <h6 className='item-label'>Profile</h6>
+          <img src={userContext.user.profile_picture} className='navbar-picture'></img>
+          <p className='item-label'>{userContext.user.first_name}</p>
           {Dropdown && (
             <div className='dropdown'>
               <div onClick={logout}>Logout</div>

@@ -26,6 +26,7 @@ type Mutation{
   Register(input:newUser!):Any!
   ActivateAccount(id:ID!):Any!
   ResetPassword(id: String!, newPassword:String!):String!
+  UploadProfilePic(id:String!, newProfilePicture:String!):String!
 }
 
 input newUser{

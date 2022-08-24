@@ -33,16 +33,16 @@ export default function RegisterPage(){
             <img src="../assets/logo.png" className='logo' alt="" />
             <div className='form white-bg'>
                 <div className='form-label-container'>
-                    <h2 className='text-black'>Sign Up</h2> 
+                    <p className='mv-30 text-black text-xl'>Sign Up</p> 
                 </div>
                 <input id="first_name" type="text" className='white-bg text-input' placeholder='First Name' />           
                 <input id="last_name" type="text" className='white-bg text-input' placeholder='Last Name' />           
                 <input id="email" type="email" className='white-bg text-input' placeholder='Email or Phone' />           
                 <input id="password" type="password" className='white-bg text-input' placeholder='Password (6 or more characters)' />
                 <button onClick={register} className='blue-button'>Sign Up</button>
-                <div className='w-fit flex-row'>
-                    <p className='text-black'>Already have a LinkhedIn Account?</p>
-                    <Link className='a' to='/'>Sign In</Link>
+                <div className='w-fit flex-row mv-20'>
+                    <p className='text-black text-xs'>Already have a LinkhedIn Account?</p>
+                    <Link className='a text-s' to='/'>Sign In</Link>
                 </div> 
                 {Error ===true && (
                     <p className='text-black'>Email Already Exists</p>

@@ -7,14 +7,32 @@ $blue-dark: #0766be;
 $grey: rgb(120, 100, 100);
 
 //text
+.text-xl{
+    font-size: 35px;
+}
+
+.text-l{
+    font-size: 25px;
+}
+
+.text-m{
+    font-size: 20px;
+}
+
+.text-s{
+    font-size:15px
+}
+
 .text-black{
     color: $black;
 }
 .text-blue{
     color: $blue;
 }
-h2{
-    font-size: 35px;
+
+p{
+    margin: 0;
+    padding:0; 
 }
 
 
@@ -39,6 +57,12 @@ h2{
     align-items: center;
 }
 
+.center-col{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 .form-label-container{
     width: 360px;
     display: flex;
@@ -51,6 +75,19 @@ h2{
     display: flex;
     flex-direction: row;
     align-items: center;
+}
+
+
+//components
+.searchbar{
+    color: $black;
+    font-size: 15px;
+    width: 300px;
+    height: 40px;
+    border-radius: 5px;
+    padding-left:10px;
+    margin-right: 200px;
+    border:1px solid rgba(0, 0, 0, 0.50);
 }
 
 .navbar-logo{
@@ -73,6 +110,12 @@ h2{
         height: 25px;
         // border-radius: 100%;
         fill: $grey;
+    }
+    .navbar-picture{
+        width:25px;
+        height: 25px;
+        border-radius: 100%;
+        border :black solid 1px;
     }
     .item-label{
         color: $grey;
@@ -98,6 +141,12 @@ h2{
     align-items: center;
     justify-content: center;
     padding-top: 25px;
+    .navbar-picture{
+        width:25px;
+        height: 25px;
+        border-radius: 100%;
+        border :black solid 1.75px;
+    }
     .navbar-icon{
         scale: 170%;
         fill: $black;
@@ -108,6 +157,7 @@ h2{
         font-size: 12px;
         margin: 5px;
         border-bottom: 4px solid $black;
+        font-weight: bold;
     }
 }
 
@@ -118,18 +168,6 @@ h2{
     flex-direction: row;
     align-items: center;
     justify-content: space-evenly;
-}
-
-//components
-.searchbar{
-    color: $black;
-    font-size: 15px;
-    width: 300px;
-    height: 40px;
-    border-radius: 5px;
-    padding-left:10px;
-    margin-right: 200px;
-    border:1px solid rgba(0, 0, 0, 0.50);
 }
 
 .logo{
@@ -188,6 +226,27 @@ h2{
     border:1px solid rgba(0, 0, 0, 0.50);
 }
 
+.profile{
+    padding: 30px;
+    width: 50%;
+    margin:20px;
+    height: fit-content;
+    border: black solid 1px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    border-radius: 15px;
+    .profile-picture{
+        width: 150px;
+        height: 150px;
+        border-radius: 100%;
+        border: white 1px solid
+    }
+}
+
+
+
 //Size
 .fullscreen{
     width: 100vw;
@@ -239,3 +298,19 @@ h2{
 .mb-10{
     margin-bottom: 10px;
 }
+
+.mb-20{
+    margin-bottom: 20px;
+}
+
+.mv-30{
+    margin-top: 30px;
+    margin-bottom: 30px;
+}
+
+.mv-20{
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+//padding

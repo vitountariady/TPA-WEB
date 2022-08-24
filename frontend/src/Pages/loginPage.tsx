@@ -30,18 +30,18 @@ export default function LoginPage(){
             <img src="../assets/logo.png" className='logo' alt="" />
             <div className='form white-bg'>
                 <div className='form-label-container'>
-                    <h2 className='text-black'>Sign In</h2> 
+                    <p className='text-black text-xl mv-30'>Sign In</p> 
                 </div>
                 <input id='email' type="email" className='white-bg text-input' placeholder='Email or Phone' />           
                 <input id='password' type="password" className='white-bg text-input' placeholder='Password' />
                 <button onClick={login} className='blue-button'>Sign In</button>  
-                <div className='w-fit flex-row'>
+                <div className='w-fit flex-row mv-20'>
                     <p className='text-black'>Forgot Password?</p>
                     <Link className='a' to='/forgotPassword'>Reset Password</Link>
                 </div>          
                 <div className='w-fit flex-row'>
-                    <p className='text-black'>New to LinkhedIn?</p>
-                    <Link className='a' to='/register'>Sign Up</Link>
+                    <p className='text-black text-xs'>New to LinkhedIn?</p>
+                    <Link className='a text-xs' to='/register'>Sign Up</Link>
                 </div>          
             </div>
         </div>

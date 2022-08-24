@@ -38,3 +38,9 @@ export const resetPassword = gql`
     ResetPassword(id:$id, newPassword:$newpass)
   }
 `
+
+export const uploadProfilePicture = gql`
+  mutation uploadProfilePicture($id:String!, $newProfilePicture:String!){
+    UploadProfilePic(id:$id, newProfilePicture:$newProfilePicture)
+  }
+`

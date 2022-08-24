@@ -12,6 +12,7 @@ import { Activate } from '../queries/userQueries'
 import ActivationPage from './Pages/ActivationPage'
 import ForgotPasswordPage from './Pages/ForgotPasswordPage'
 import ResetPasswordPage from './Pages/ResetPassword'
+import Error404Page from './Pages/Error404Page'
 
 const Protected = () =>{
   return(
@@ -44,6 +45,7 @@ function App() {
           <Route path="/home" element={<Homepage></Homepage>}></Route>
           <Route path="/profile" element={<ProfilePage></ProfilePage>}></Route>
         </Route>
+        <Route path="*" element={<Error404Page></Error404Page>}></Route>
       </Routes>
     </AuthContextProvider>
   )
