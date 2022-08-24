@@ -17,8 +17,8 @@ export default function LoginPage(){
             }
         ).then((x)=>{
             // console.log("sudah login")
-            console.log(x.data.Login.user)
             userContext.setUser(x.data.Login.user)
+            userContext.setToken(x.data.Login.token)
             navigate('/home')
         }).catch((err)=>{
             console.log(err)
@@ -34,13 +34,13 @@ export default function LoginPage(){
                 </div>
                 <input id='email' type="email" className='white-bg text-input' placeholder='Email or Phone' />           
                 <input id='password' type="password" className='white-bg text-input' placeholder='Password' />
-                <button onClick={login} className='blue-button'>Sign In</button>  
+                <button onClick={login} className='blue-button text-white'>Sign In</button>  
                 <div className='w-fit flex-row mv-20'>
-                    <p className='text-black'>Forgot Password?</p>
+                    <p className='text-black '>Forgot Password?</p>
                     <Link className='a' to='/forgotPassword'>Reset Password</Link>
                 </div>          
                 <div className='w-fit flex-row'>
-                    <p className='text-black text-xs'>New to LinkhedIn?</p>
+                    <p className='text-black text-xs '>New to LinkhedIn?</p>
                     <Link className='a text-xs' to='/register'>Sign Up</Link>
                 </div>          
             </div>

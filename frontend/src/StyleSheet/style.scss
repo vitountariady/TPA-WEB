@@ -1,12 +1,20 @@
 //Colors
 $black:#000000;
 $white:#ffffff;
+$grey-light: #ededed;
 $blue: #0077B5;
 $blue-light: #00A0DC;
 $blue-dark: #0766be;
+$red: rgb(255, 0, 0);
+$red-light: rgb(250, 100, 100);
+$red-dark: rgb(150, 0, 0);
 $grey: rgb(120, 100, 100);
 
 //text
+.bold{
+    font-weight: bold;
+}
+
 .text-xl{
     font-size: 35px;
 }
@@ -25,6 +33,9 @@ $grey: rgb(120, 100, 100);
 
 .text-black{
     color: $black;
+}
+.text-white{
+    color: $white;
 }
 .text-blue{
     color: $blue;
@@ -77,9 +88,25 @@ p{
     align-items: center;
 }
 
+.flex-col{
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
 
 //components
+.modal{
+    z-index: 10;
+    display:flex;
+    position: fixed;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.65);
+}
+
 .searchbar{
+    background-color: $grey-light;
     color: $black;
     font-size: 15px;
     width: 300px;
@@ -87,7 +114,7 @@ p{
     border-radius: 5px;
     padding-left:10px;
     margin-right: 200px;
-    border:1px solid rgba(0, 0, 0, 0.50);
+    border:0.5px solid rgba(0, 0, 0, 0.50);
 }
 
 .navbar-logo{
@@ -190,8 +217,10 @@ p{
 }
 
 .form{
+    overflow-y: auto;
+    background-color: $white;
     margin-bottom:30px;
-    min-height: 450px;
+    height: 450px;
     min-width:400px;
     border-radius: 15px;
     display: flex;
@@ -219,7 +248,7 @@ p{
     color: $black;
     font-size: 15px;
     width: 350px;
-    height: 40px;
+    height: 30px;
     border-radius: 5px;
     padding-left:10px;
     margin-bottom: 20px;
@@ -266,14 +295,55 @@ p{
     width: fit-content;
 }
 
+.w-350{
+    width: 350px;
+}
+
 //Height
 .h-screen{
     min-height: 100vh;
 }
 
+//spacing
+.space-between{
+    justify-content: space-between;
+}
+
+.space-around{
+    justify-content: space-around;
+}
+
+.space-evenly{
+    justify-content: space-evenly;
+}
 
 
 //Button
+.add-button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 35px;
+    height:35px;
+    padding: 10px;
+    background-color: $white;
+    border-radius: 100%;
+    .plus-logo{
+        fill: black;
+        scale: 150%;
+    }
+    &:hover{
+        background-color: $grey-light;
+    }
+    &:active{
+        background-color: $grey;
+        .plus-logo{
+            fill: wheat;
+            scale: 150%;
+        }
+    }
+}
+
 .blue-button{
     margin-top: 20px;
     display: flex;
@@ -281,7 +351,7 @@ p{
     justify-content: space-evenly;
     align-items: center;
     font-size: 20px;
-    width: 365px;
+    width: 300px;
     height: 50px;
     border-radius: 35px;
     background-color: $blue;
@@ -294,6 +364,52 @@ p{
     }
 }
 
+.blue-button-smaller{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: 20px;
+    width: 100px;
+    height: 40px;
+    border-radius: 35px;
+    background-color: $blue;
+
+    &:hover{
+        background-color: $blue-light;
+    }
+    &:active{
+        background-color: $blue-dark;
+    }
+}
+
+.red-button-smaller{
+    margin-top: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: 20px;
+    width: 100px;
+    height: 40px;
+    border-radius: 35px;
+    background-color: $red;
+
+    &:hover{
+        background-color: $red-light;
+    }
+    &:active{
+        background-color: $red-dark;
+    }
+}
+
+
+//padding
+.p-5{
+    padding: 5px;
+}
+
 //margins
 .mb-10{
     margin-bottom: 10px;
@@ -301,6 +417,15 @@ p{
 
 .mb-20{
     margin-bottom: 20px;
+}
+
+.mb-30{
+    margin-bottom: 30px;
+}
+
+.mh-20{
+    margin-left: 20px;
+    margin-right: 20px;
 }
 
 .mv-30{
@@ -313,4 +438,20 @@ p{
     margin-bottom: 20px;
 }
 
-//padding
+.mv-10{
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+
+//display
+.invisible{
+    display:none
+}
+
+//borders
+.border-sering-pake{
+    border: 1px solid $grey;
+    border-radius: 5px;
+    padding: 5px;
+}

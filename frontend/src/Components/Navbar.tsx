@@ -3,11 +3,12 @@ import {AiFillHome, AiFillMessage} from 'react-icons/ai'
 import {BsPeopleFill, BsLinkedin, BsPersonCircle} from 'react-icons/bs'
 import {FaSuitcase} from 'react-icons/fa'
 import {IoMdNotifications} from 'react-icons/io'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useNavigate } from 'react-router-dom'
 import { UserAuth } from '../../contexts/authContext'
 export default function Navbar() {
 
   const userContext = UserAuth();
+  const navigate = useNavigate();
 
   const [Dropdown, setDropdown] = useState(false);
 

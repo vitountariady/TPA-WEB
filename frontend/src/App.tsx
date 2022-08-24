@@ -6,13 +6,15 @@ import LoginPage from './Pages/loginPage'
 import RegisterPage from './Pages/RegisterPage'
 import Homepage from './Pages/Homepage'
 import ProfilePage from './Pages/ProfilePage'
-import AuthContextProvider from '../contexts/authContext'
+import AuthContextProvider, { UserAuth } from '../contexts/authContext'
 import {ProtectedRoute, UnprotectedRoute} from '../contexts/middleware'
 import { Activate } from '../queries/userQueries'
 import ActivationPage from './Pages/ActivationPage'
 import ForgotPasswordPage from './Pages/ForgotPasswordPage'
 import ResetPasswordPage from './Pages/ResetPassword'
 import Error404Page from './Pages/Error404Page'
+import { ApolloClient, ApolloLink, ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client'
+import { FaYoutubeSquare } from 'react-icons/fa'
 
 const Protected = () =>{
   return(
@@ -30,24 +32,49 @@ const Unprotected = () =>{
   )
 }
 
+
 function App() {
+  const main_url = "http://localhost:8080";
+  const url = main_url + "/query";
+  const userContext = UserAuth();
+  const authLink = new ApolloLink((operation:any, forward:any)=>{
+    if(userContext.user && userContext.token!==undefined){
+      operation.setContext({
+        headers:{
+          Authorization: `Bearer ${userContext.token}`,
+        }
+      })
+    }
+    return forward(operation)
+  })
+
+  const httplink = createHttpLink({
+    uri:url,
+  })
+
+  const client = new ApolloClient({
+    link:authLink.concat(httplink),
+    cache: new InMemoryCache({})
+  })
+
+
   return (
-    <AuthContextProvider>
-      <Routes>
-        <Route path="/activate/:id" element={<ActivationPage></ActivationPage>}></Route>
-        <Route element={<Unprotected/>}>
-          <Route path="/" element={<LoginPage></LoginPage>}></Route>
-          <Route path="/register" element={<RegisterPage></RegisterPage>}></Route>
-          <Route path="/forgotPassword" element={<ForgotPasswordPage></ForgotPasswordPage>}></Route>
-          <Route path="/resetPassword/:id" element={<ResetPasswordPage></ResetPasswordPage>}></Route>
-        </Route>
-        <Route element={<Protected/>}>
-          <Route path="/home" element={<Homepage></Homepage>}></Route>
-          <Route path="/profile" element={<ProfilePage></ProfilePage>}></Route>
-        </Route>
-        <Route path="*" element={<Error404Page></Error404Page>}></Route>
-      </Routes>
-    </AuthContextProvider>
+    <ApolloProvider client={client}>
+        <Routes>
+          <Route path="/activate/:id" element={<ActivationPage></ActivationPage>}></Route>
+          <Route element={<Unprotected/>}>
+            <Route path="/" element={<LoginPage></LoginPage>}></Route>
+            <Route path="/register" element={<RegisterPage></RegisterPage>}></Route>
+            <Route path="/forgotPassword" element={<ForgotPasswordPage></ForgotPasswordPage>}></Route>
+            <Route path="/resetPassword/:id" element={<ResetPasswordPage></ResetPasswordPage>}></Route>
+          </Route>
+          <Route element={<Protected/>}>
+            <Route path="/home" element={<Homepage></Homepage>}></Route>
+            <Route path="/profile" element={<ProfilePage></ProfilePage>}></Route>
+          </Route>
+          <Route path="*" element={<Error404Page></Error404Page>}></Route>
+        </Routes>
+    </ApolloProvider>
   )
 }
 

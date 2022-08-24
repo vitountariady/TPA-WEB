@@ -42,6 +42,7 @@ func main() {
 	db := config.GetDB()
 	db.AutoMigrate(&model.User{})
 	db.AutoMigrate(&model.Link{})
+	db.AutoMigrate(&model.Education{})
 
 	c := generated.Config{Resolvers: &graph.Resolver{
 		DB: db,
