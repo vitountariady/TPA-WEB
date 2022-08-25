@@ -64,6 +64,7 @@ export const createEducation = gql`
 export const getUserEducation = gql`
   query getUserEducation($UserID:ID!){
     userEducation(userID:$UserID){
+      ID,
       UserID,
       School,
       Degree,
@@ -73,6 +74,20 @@ export const getUserEducation = gql`
       Grade,
       Activities,
       Description
+    }
+  }
+`
+
+export const getUserByID = gql`
+  query getUserByID ($UserID:ID!){
+    getUser(id:$UserID){
+      id,
+      email,
+      first_name,
+      last_name,
+      password,
+      activated,
+      profile_picture_url
     }
   }
 `

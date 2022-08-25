@@ -19,7 +19,7 @@ export default function ActivationPage() {
         if(!loading){
             if(error){
                 console.log(error)
-                 setError(true);
+                setError(true);
             }else{
                 const userid = data.getLink.userID
                 activate({variables:{id:userid}}).then(()=>{

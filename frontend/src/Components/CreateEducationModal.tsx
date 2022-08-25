@@ -32,8 +32,9 @@ const handleCreate = () =>{
         Activities: activities,
         Description: description
 
-    }}).catch((err)=>{
-        console.log(err)
+    }}).then(()=>{
+        parameter.refetch()
+        parameter.toggle()
     })
 }
 
@@ -60,13 +61,13 @@ const handleCreate = () =>{
             </div>
 
             <div className='w-full flex-row space-between mb-20'>
-                <p className='text-black text-s'>Start Date</p>
-                <input type="date" id='StartDate' className='white-bg text-black text-s border-sering-pake'/>
+                <p className='text-black text-s'>Start Year</p>
+                <input type="number" id='StartDate'className='white-bg text-black text-s border-sering-pake'placeholder='2020'/>
             </div>
 
             <div className='w-full flex-row space-between mb-20'>
-                <p className='text-black text-s'>End Date</p>
-                <input type="date" id='EndDate' className='white-bg text-black text-s border-sering-pake'/>
+                <p className='text-black text-s'>End Year</p>
+                <input type="number" id='EndDate'className='white-bg text-black text-s border-sering-pake'placeholder='2022'/>
             </div>
 
             <div className='w-full flex-col'>
@@ -80,7 +81,7 @@ const handleCreate = () =>{
             </div>
 
             <div className='w-full flex-col'>
-                <p className='text-black text-s'>Activities</p>
+                <p className='text-black text-s'>Description</p>
                 <input id='Description' type="text" className='text-input white-bg' placeholder=""/>
             </div>
 

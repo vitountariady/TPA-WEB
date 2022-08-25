@@ -70,7 +70,7 @@ function App() {
           </Route>
           <Route element={<Protected/>}>
             <Route path="/home" element={<Homepage></Homepage>}></Route>
-            <Route path="/profile" element={<ProfilePage></ProfilePage>}></Route>
+            <Route path="/profile/:id" element={<ProfilePage></ProfilePage>}></Route>
           </Route>
           <Route path="*" element={<Error404Page></Error404Page>}></Route>
         </Routes>

@@ -18,6 +18,7 @@ type User{
 
 type Query{
   Users: [User!]!
+  getUser(id:ID!): User!
   testMiddleware: String! @auth
 }
 

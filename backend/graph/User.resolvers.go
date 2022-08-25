@@ -51,6 +51,11 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	panic(fmt.Errorf("not implemented"))
 }
 
+// GetUser is the resolver for the getUser field.
+func (r *queryResolver) GetUser(ctx context.Context, id string) (*model.User, error) {
+	return service.GetUserById(ctx, id)
+}
+
 // TestMiddleware is the resolver for the testMiddleware field.
 func (r *queryResolver) TestMiddleware(ctx context.Context) (string, error) {
 	return "Success", nil
