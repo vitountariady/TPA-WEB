@@ -4,12 +4,14 @@ import Navbar from '../Components/Navbar'
 import { getDownloadURL, getStorage,ref, uploadBytes } from "firebase/storage";
 import {storage} from "../../firebase.config"
 import { useMutation, useQuery } from '@apollo/client';
-import { getUserByID, getUserEducation, uploadProfilePicture } from '../../queries/userQueries';
+import { getUserByID, getUserEducation, getUserExperience, uploadProfilePicture } from '../../queries/queries';
 import { AiOutlinePlus } from 'react-icons/ai';
 import CreateEducationModal from '../Components/CreateEducationModal';
 import Education from '../Components/Education';
 import { useParams } from 'react-router-dom';
 import Error404Page from './Error404Page';
+import CreateExperienceModal from '../Components/CreateExperienceModal';
+import Experience from '../Components/Experience';
 
 export default function ProfilePage() {
   const userContext = UserAuth();
@@ -17,7 +19,9 @@ export default function ProfilePage() {
   const [Error, setError] = useState(false)
   const [uploadProfile] = useMutation(uploadProfilePicture)
   const [EducationModal, setEducationModal] = useState(false);
+  const [ExperienceModal, setExperienceModal] = useState(false);
   const [UserEducations, setUserEducations] = useState([])
+  const [UserExperiences, setUserExperiences] = useState([])
   const [MyProfile, setMyProfile] = useState(false)
   const [User, setUser] = useState({
     id:"",
@@ -28,6 +32,9 @@ export default function ProfilePage() {
 
   const education = useQuery(getUserEducation,{variables:{UserID:User.id}})
   const user = useQuery(getUserByID,{variables:{UserID: userID}})
+  const experience = useQuery(getUserExperience,{variables:{UserID:User.id}})
+
+
   useEffect(()=>{
     if(userID === userContext.user.id){
       setMyProfile(true)
@@ -39,6 +46,12 @@ export default function ProfilePage() {
       setUserEducations(education.data.userEducation)
     }
   }, [education.loading,education.data])
+
+  useEffect(() => {
+    if(!experience.loading && !experience.error){
+      setUserExperiences(experience.data.userExperience)
+    }
+  }, [experience.loading,experience.data])
 
   useEffect(()=>{
     if(user.error){
@@ -55,13 +68,17 @@ export default function ProfilePage() {
     setEducationModal(!EducationModal)
   }
 
+  const toggleCreateExperience = () =>{
+    setExperienceModal(!ExperienceModal)
+  }
+
   useEffect(() => {
-    if(EducationModal === true){
+    if(EducationModal === true||ExperienceModal===true){
         document.body.style.overflow="hidden";
     }else{
         document.body.style.overflow = "visible"
     }
-}, [EducationModal])
+}, [EducationModal,ExperienceModal])
   
   const handleFileChange = async(e:any) =>{
     const file = e.target.files[0]
@@ -92,13 +109,22 @@ export default function ProfilePage() {
         {EducationModal === true && (
           <CreateEducationModal refetch={education.refetch} toggle={toggleCreateEducation}></CreateEducationModal>
         )}
+        {ExperienceModal === true && (
+          <CreateExperienceModal refetch={experience.refetch} toggle={toggleCreateExperience}></CreateExperienceModal>
+        )}
         <Navbar></Navbar>
         <div className='profile'>
             <label htmlFor="file">
               <img className='profile-picture' src={User.profile_picture_url} alt="" />
             </label>
             <p className='text-black mv-20 text-xl'>{User.first_name}  {User.last_name}</p>
-            <p className='text-black mb-20 text-m'>Description</p>
+            {UserExperiences.map((experience:any)=>{
+              if(experience.Active){
+                return(
+                  <p key={experience.ID} className='text-black mb-20 text-m'>{experience.Description} at {experience.CompanyName}</p>
+                )
+              }
+            })}
             <input disabled={!MyProfile} type="file" name='file' id='file' className='invisible' onChange={(e)=>{handleFileChange(e)}}/>
         </div>
 
@@ -111,9 +137,12 @@ export default function ProfilePage() {
             </button>
             )}
           </div>
-          {UserEducations.map((education:any)=>{
+          {UserEducations.length===0 && (
+            <p className='text-black text-s w-full'>Empty</p>
+          )}
+          {UserEducations.map((edu:any)=>{
             return(
-              <Education key={education.ID} education={education}></Education>
+              <Education key={edu.ID} myprofile={MyProfile} education={edu} refetch={education.refetch}></Education>
             )
           })}
         </div>
@@ -121,14 +150,17 @@ export default function ProfilePage() {
           <div className='flex-row w-full space-between'>
             <p className='text-black text-l bold mb-20'>Experiences</p>
             {MyProfile === true && (
-            <button className='add-button' onClick={toggleCreateEducation}>
+            <button className='add-button' onClick={toggleCreateExperience}>
               <AiOutlinePlus className='plus-logo' ></AiOutlinePlus>
             </button>
             )}
           </div>
-          {UserEducations.map((education:any)=>{
+          {UserExperiences.length===0 && (
+            <p className='text-black text-s w-full'>Empty</p>
+          )}
+          {UserExperiences.map((exp:any)=>{
             return(
-              <Education key={education.ID} education={education}></Education>
+              <Experience key={exp.ID} refetch={experience.refetch} myprofile={MyProfile} experience={exp}></Experience>
             )
           })}
         </div>

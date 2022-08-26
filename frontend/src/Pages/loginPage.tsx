@@ -1,6 +1,6 @@
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import '../StyleSheet/style.scss'
-import { Login } from '../../queries/userQueries'
+import { Login } from '../../queries/queries'
 import { useMutation } from '@apollo/client';
 import { UserAuth } from '../../contexts/authContext';
 

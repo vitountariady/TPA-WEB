@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client'
 import { Link, useNavigate } from 'react-router-dom'
 import '../StyleSheet/style.scss'
-import { Register } from '../../queries/userQueries'
+import { Register } from '../../queries/queries'
 import { useState } from 'react';
 
 export default function RegisterPage(){

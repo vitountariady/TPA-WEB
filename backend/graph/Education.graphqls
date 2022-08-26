@@ -26,11 +26,11 @@ input newEducation{
 
 extend type Query{
     userEducation(userID: ID!): [Education!]! @auth
-    myEducation: [Education!]! @auth
+    myEducation: [Education!]! @auth 
 }
 
 extend type Mutation {
-  createEducation(input: newEducation!): String!
-  updateEducation(id: String!, input: newEducation!): String!
-  deleteEducation(id: String!): String!
+  createEducation(input: newEducation!): String! @auth
+  updateEducation(id: String!, input: newEducation!): String! @auth
+  deleteEducation(id: String!): String! @auth
 }

@@ -1,15 +1,14 @@
-import { useMutation } from '@apollo/client'
+import { useMutation } from '@apollo/client';
 import React from 'react'
 import { UserAuth } from '../../contexts/authContext';
-import { createEducation } from '../../queries/queries';
+import { updateEducation } from '../../queries/queries';
 
-export default function CreateEducationModal(parameter:any) {
-
-    const [create] = useMutation(createEducation);
+export default function UpdateEducationModal(parameter:any) {
+    const [update] = useMutation(updateEducation);
 
     const userContext = UserAuth();
 
-    const handleCreate = () =>{
+    const handleUpdate = () =>{
         const school = (document.getElementById("School") as HTMLInputElement).value
         const degree = (document.getElementById("Degree") as HTMLInputElement).value
         const studyField = (document.getElementById("StudyField") as HTMLInputElement).value
@@ -19,7 +18,7 @@ export default function CreateEducationModal(parameter:any) {
         const activities = (document.getElementById("Activities") as HTMLInputElement).value
         const description = (document.getElementById("Description") as HTMLInputElement).value
 
-        create({variables:{
+        update({variables:{
             UserID: userContext.user.id,
             School: school,
             Degree: degree,
@@ -40,7 +39,7 @@ export default function CreateEducationModal(parameter:any) {
         <div className='modal center-all'>
         <div className='form'>
                 <div className='w-full flex-row mb-20'>
-                    <p className='text-black text-l bold'>Add education</p>
+                    <p className='text-black text-l bold'>Update education</p>
                 </div>
 
                 <div className='w-full flex-col'>
@@ -84,7 +83,7 @@ export default function CreateEducationModal(parameter:any) {
                 </div>
 
                 <div className='w-full flex-row space-evenly'>
-                    <button onClick={handleCreate} className='blue-button-smaller text-white'>Save</button>
+                    <button onClick={handleUpdate} className='blue-button-smaller text-white'>Save</button>
                     <button onClick={parameter.toggle} className='red-button-smaller text-white'>Cancel</button>
                 </div>
                 

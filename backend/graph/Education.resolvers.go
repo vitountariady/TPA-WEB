@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/google/uuid"
 	"github.com/vitountariady/TPA-WEB/graph/model"
@@ -35,12 +34,31 @@ func (r *mutationResolver) CreateEducation(ctx context.Context, input model.NewE
 
 // UpdateEducation is the resolver for the updateEducation field.
 func (r *mutationResolver) UpdateEducation(ctx context.Context, id string, input model.NewEducation) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	var model *model.Education
+
+	if err := r.DB.First(&model, "id = ?", id).Error; err != nil {
+		return "Error", err
+	}
+	model.School = input.School
+	model.Degree = input.Degree
+	model.FieldOfStudy = input.FieldOfStudy
+	model.StartDate = input.StartDate
+	model.EndDate = input.EndDate
+	model.Grade = input.Grade
+	model.Activities = input.Activities
+	model.Description = input.Description
+	return "Ok", r.DB.Save(model).Error
 }
 
 // DeleteEducation is the resolver for the deleteEducation field.
 func (r *mutationResolver) DeleteEducation(ctx context.Context, id string) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	education := new(model.Education)
+	err := r.DB.Delete(education, "id=?", id).Error
+	if err != nil {
+		return "", err
+	} else {
+		return "delete education successful", err
+	}
 }
 
 // UserEducation is the resolver for the userEducation field.

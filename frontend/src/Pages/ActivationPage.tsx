@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client'
 import React, { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { Activate, GetLink } from '../../queries/userQueries'
+import { Activate, GetLink } from '../../queries/queries'
 import Error404Page from './Error404Page'
 
 export default function ActivationPage() {

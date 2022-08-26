@@ -96,7 +96,22 @@ p{
 
 
 //components
+.EducationOrExperience{
+    width: 100%;
+    padding: 5px;
+    margin-bottom: 20px;
+    display: flex;
+    flex-direction: row;
+    align-items: start;
+    border-radius: 10px;
+    // &:hover{
+    //     background-color: $grey-light;
+    // }
+}
+
 .modal{
+    top: 0;
+    left: 0;
     z-index: 10;
     display:flex;
     position: fixed;
@@ -185,6 +200,14 @@ p{
         margin: 5px;
         border-bottom: 4px solid $black;
         font-weight: bold;
+    }
+}
+
+.icon{
+    scale: 170%;
+    fill: $grey;
+    &:hover{
+        fill: $black;
     }
 }
 
@@ -409,11 +432,15 @@ p{
 .p-5{
     padding: 5px;
 }
+.p-10{
+    padding: 10px;
+}
 
 .pv-5{
     padding-top: 5px;
     padding-bottom: 5px;
 }
+
 
 //margins
 .mb-10{

@@ -1,7 +1,7 @@
 import { useMutation } from '@apollo/client';
 import React from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { sendResetPassLink } from '../../queries/userQueries';
+import { sendResetPassLink } from '../../queries/queries';
 
 export default function ForgotPasswordPage() {
   const navigate = useNavigate();

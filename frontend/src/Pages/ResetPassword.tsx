@@ -1,7 +1,7 @@
 import { useMutation, useQuery } from '@apollo/client'
 import React from 'react'
 import { Navigate, useNavigate, useParams } from 'react-router-dom';
-import { GetLink, resetPassword } from '../../queries/userQueries'
+import { GetLink, resetPassword } from '../../queries/queries'
 
 export default function ResetPasswordPage() {  
   const id= useParams().id;
