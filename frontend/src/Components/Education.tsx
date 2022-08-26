@@ -22,7 +22,7 @@ export default function Education(parameter:any) {
   return (
     <div className='EducationOrExperience'>
       {updateModal && (
-        <UpdateEducationModal toggle={toggleUpdateModal} refetch = {parameter.refetch}></UpdateEducationModal>
+        <UpdateEducationModal toggle={toggleUpdateModal} refetch = {parameter.refetch} education={parameter.education}></UpdateEducationModal>
       )}
       <div className='w-full flex-col'>
         <p className='text-black text-m'>{parameter.education.School}</p>

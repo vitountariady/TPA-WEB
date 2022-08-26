@@ -19,18 +19,6 @@ export default function CreateExperienceModal(parameter:any) {
         const industry = (document.getElementById("Industry") as HTMLInputElement).value
         const description = (document.getElementById("Description") as HTMLInputElement).value
 
-        console.log(userContext.user.id);
-        console.log(title);
-        console.log(employmentType);
-        console.log(companyName);
-        console.log(location);
-        console.log(active);
-        console.log(startYear);
-        console.log(endYear);
-        console.log(industry);
-        console.log(description);
-
-
         create({variables:{
             UserID: userContext.user.id,
             Title:title,

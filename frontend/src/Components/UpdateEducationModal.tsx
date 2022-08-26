@@ -19,6 +19,7 @@ export default function UpdateEducationModal(parameter:any) {
         const description = (document.getElementById("Description") as HTMLInputElement).value
 
         update({variables:{
+            id:parameter.education.ID,
             UserID: userContext.user.id,
             School: school,
             Degree: degree,
@@ -32,6 +33,8 @@ export default function UpdateEducationModal(parameter:any) {
         }}).then(()=>{
             parameter.refetch()
             parameter.toggle()
+        }).catch((err)=>{
+            console.log(err)
         })
     }
 
@@ -44,42 +47,42 @@ export default function UpdateEducationModal(parameter:any) {
 
                 <div className='w-full flex-col'>
                     <p className='text-black text-s'>School</p>
-                    <input id='School' type="text" className='text-input white-bg' placeholder='Ex: Binus University'/>
+                    <input id='School' type="text" className='text-input white-bg' placeholder='Ex: Binus University' defaultValue={parameter.education.School}/>
                 </div>
                 
                 <div className='w-full flex-col'>
                     <p className='text-black text-s'>Degree</p>
-                    <input id='Degree' type="text" className='text-input white-bg' placeholder="Ex: Bachelor's"/>
+                    <input id='Degree' type="text" className='text-input white-bg' placeholder="Ex: Bachelor's" defaultValue={parameter.education.Degree}/>
                 </div>
 
                 <div className='w-full flex-col'>
                     <p className='text-black text-s'>Field of Study</p>
-                    <input id='StudyField' type="text" className='text-input white-bg' placeholder="Ex: Computer Science"/>
+                    <input id='StudyField' type="text" className='text-input white-bg' placeholder="Ex: Computer Science" defaultValue={parameter.education.FieldOfStudy}/>
                 </div>
 
                 <div className='w-full flex-row space-between mb-20'>
                     <p className='text-black text-s'>Start Year</p>
-                    <input type="number" id='StartDate'className='white-bg text-black text-s border-sering-pake'placeholder='2020'/>
+                    <input type="number" id='StartDate'className='white-bg text-black text-s border-sering-pake'placeholder='2020' defaultValue={parameter.education.StartDate}/>
                 </div>
 
                 <div className='w-full flex-row space-between mb-20'>
                     <p className='text-black text-s'>End Year</p>
-                    <input type="number" id='EndDate'className='white-bg text-black text-s border-sering-pake'placeholder='2022'/>
+                    <input type="number" id='EndDate'className='white-bg text-black text-s border-sering-pake'placeholder='2022' defaultValue={parameter.education.EndDate}/>
                 </div>
 
                 <div className='w-full flex-col'>
                     <p className='text-black text-s'>Grade</p>
-                    <input id='Grade' type="text" className='text-input white-bg' placeholder=""/>
+                    <input id='Grade' type="text" className='text-input white-bg' placeholder=""defaultValue={parameter.education.Grade}/>
                 </div>
 
                 <div className='w-full flex-col'>
                     <p className='text-black text-s'>Activities</p>
-                    <input id='Activities' type="text" className='text-input white-bg' placeholder="Ex: Voleyball, Basketball"/>
+                    <input id='Activities' type="text" className='text-input white-bg' placeholder="Ex: Voleyball, Basketball" defaultValue={parameter.education.Activities}/>
                 </div>
 
                 <div className='w-full flex-col'>
                     <p className='text-black text-s'>Description</p>
-                    <input id='Description' type="text" className='text-input white-bg' placeholder=""/>
+                    <input id='Description' type="text" className='text-input white-bg' placeholder="" defaultValue={parameter.education.Description}/>
                 </div>
 
                 <div className='w-full flex-row space-evenly'>
