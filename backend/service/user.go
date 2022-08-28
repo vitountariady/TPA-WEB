@@ -13,7 +13,7 @@ func UserCreate(ctx context.Context, input model.NewUser) (*model.User, error) {
 	db := config.GetDB()
 
 	input.Password = tools.HashPassword(input.Password)
-
+	var emptyStringArr []string
 	user := model.User{
 		ID:                uuid.NewString(),
 		Email:             input.Email,
@@ -22,6 +22,9 @@ func UserCreate(ctx context.Context, input model.NewUser) (*model.User, error) {
 		Password:          input.Password,
 		Activated:         false,
 		ProfilePictureURL: "https://firebasestorage.googleapis.com/v0/b/linkhedin-vt.appspot.com/o/profilePictures%2Fdefault.jpg?alt=media&token=140c66e3-a51d-47ae-aaef-00ad043d2bd0",
+		FollowedUser:      emptyStringArr,
+		ConnectedUser:     emptyStringArr,
+		ConnectRequest:    emptyStringArr,
 	}
 
 	err := db.Model(user).Create(&user).Error

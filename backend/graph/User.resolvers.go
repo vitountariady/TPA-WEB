@@ -46,6 +46,50 @@ func (r *mutationResolver) UploadProfilePic(ctx context.Context, id string, newP
 	return service.UploadProfilePicture(ctx, id, newProfilePicture)
 }
 
+// RequestConnect is the resolver for the RequestConnect field.
+func (r *mutationResolver) RequestConnect(ctx context.Context, id string, recepientID string) (string, error) {
+	user := new(model.User)
+	err := r.DB.First(user, "id=?", recepientID).Error
+	if err != nil {
+		return "User not Found", err
+	}
+	user.ConnectRequest = append(user.ConnectRequest, id)
+	return "Connect Request Sent", r.DB.Save(user).Error
+}
+
+// AcceptConnect is the resolver for the AcceptConnect field.
+func (r *mutationResolver) AcceptConnect(ctx context.Context, id string, senderID string) (string, error) {
+	recepient := new(model.User)
+	sender := new(model.User)
+	if err := r.DB.First(recepient, "id=?", id).Error; err != nil {
+		return "failed", err
+	}
+	if err := r.DB.First(sender, "id=?", senderID).Error; err != nil {
+		return "failed", err
+	}
+	new_arr := make([]string, (len(recepient.ConnectRequest) - 1))
+	k := 0
+	for i := 0; i < (len(recepient.ConnectRequest) - 1); {
+		if recepient.ConnectRequest[i] != id {
+			new_arr[i] = recepient.ConnectRequest[k]
+			k++
+			i++
+		} else {
+			k++
+		}
+	}
+	sender.ConnectedUser = append(sender.ConnectedUser, id)
+	recepient.ConnectedUser = append(recepient.ConnectedUser, senderID)
+
+	if err := r.DB.Save(recepient).Error; err != nil {
+		return "failed", err
+	}
+	if err := r.DB.Save(sender).Error; err != nil {
+		return "failed", err
+	}
+	return "Success", nil
+}
+
 // Users is the resolver for the Users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	panic(fmt.Errorf("not implemented"))
@@ -61,11 +105,30 @@ func (r *queryResolver) TestMiddleware(ctx context.Context) (string, error) {
 	return "Success", nil
 }
 
+// FollowedUser is the resolver for the followed_user field.
+func (r *userResolver) FollowedUser(ctx context.Context, obj *model.User) ([]string, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+// ConnectedUser is the resolver for the connected_user field.
+func (r *userResolver) ConnectedUser(ctx context.Context, obj *model.User) ([]string, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
+// ConnectRequest is the resolver for the connect_request field.
+func (r *userResolver) ConnectRequest(ctx context.Context, obj *model.User) ([]string, error) {
+	panic(fmt.Errorf("not implemented"))
+}
+
 // Mutation returns generated.MutationResolver implementation.
 func (r *Resolver) Mutation() generated.MutationResolver { return &mutationResolver{r} }
 
 // Query returns generated.QueryResolver implementation.
 func (r *Resolver) Query() generated.QueryResolver { return &queryResolver{r} }
 
+// User returns generated.UserResolver implementation.
+func (r *Resolver) User() generated.UserResolver { return &userResolver{r} }
+
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
+type userResolver struct{ *Resolver }
