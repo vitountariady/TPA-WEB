@@ -4,7 +4,7 @@ import Navbar from '../Components/Navbar'
 import { getDownloadURL, getStorage,ref, uploadBytes } from "firebase/storage";
 import {storage} from "../../firebase.config"
 import { useMutation, useQuery } from '@apollo/client';
-import { getUserByID, getUserEducation, getUserExperience, uploadProfilePicture } from '../../queries/queries';
+import { getUserByID, getUserEducation, getUserExperience, requestConnect, uploadProfilePicture } from '../../queries/queries';
 import { AiOutlinePlus } from 'react-icons/ai';
 import CreateEducationModal from '../Components/CreateEducationModal';
 import Education from '../Components/Education';
@@ -12,12 +12,14 @@ import { useParams } from 'react-router-dom';
 import Error404Page from './Error404Page';
 import CreateExperienceModal from '../Components/CreateExperienceModal';
 import Experience from '../Components/Experience';
+import { RefetchContext } from '../../contexts/refetcher';
 
 export default function ProfilePage() {
   const userContext = UserAuth();
   const userID = useParams().id
   const [Error, setError] = useState(false)
   const [uploadProfile] = useMutation(uploadProfilePicture)
+  const [requestConnection] = useMutation(requestConnect)
   const [EducationModal, setEducationModal] = useState(false);
   const [ExperienceModal, setExperienceModal] = useState(false);
   const [UserEducations, setUserEducations] = useState([])
@@ -27,13 +29,15 @@ export default function ProfilePage() {
     id:"",
     first_name: "",
     last_name: "",
-    profile_picture_url: "https://firebasestorage.googleapis.com/v0/b/linkhedin-vt.appspot.com/o/profilePictures%2Fdefault.jpg?alt=media&token=140c66e3-a51d-47ae-aaef-00ad043d2bd0"
+    profile_picture_url: "https://firebasestorage.googleapis.com/v0/b/linkhedin-vt.appspot.com/o/profilePictures%2Fdefault.jpg?alt=media&token=140c66e3-a51d-47ae-aaef-00ad043d2bd0",
+    connect_request:[''],
+    connected_user:['']
   })
 
   const education = useQuery(getUserEducation,{variables:{UserID:User.id}})
   const user = useQuery(getUserByID,{variables:{UserID: userID}})
   const experience = useQuery(getUserExperience,{variables:{UserID:User.id}})
-
+  const refetchContext = RefetchContext();
 
   useEffect(()=>{
     if(userID === userContext.user.id){
@@ -62,7 +66,6 @@ export default function ProfilePage() {
       setUser(user.data.getUser)
     }
   },[user.loading,user.data])
-  
 
   const toggleCreateEducation = () =>{
     setEducationModal(!EducationModal)
@@ -90,10 +93,8 @@ export default function ProfilePage() {
           newProfilePicture: x
         }}).then(()=>{
           user.refetch()
+          refetchContext.refetchUser();
         })
-        const updatedUser = userContext.user
-        updatedUser.profile_picture = x
-        userContext.setUser(updatedUser)
       })
     })
   }
@@ -108,10 +109,10 @@ export default function ProfilePage() {
     <div className='white-bg fullscreen center-col'>
         {EducationModal === true && (
           <CreateEducationModal refetch={education.refetch} toggle={toggleCreateEducation}></CreateEducationModal>
-        )}
+          )}
         {ExperienceModal === true && (
           <CreateExperienceModal refetch={experience.refetch} toggle={toggleCreateExperience}></CreateExperienceModal>
-        )}
+          )}
         <Navbar></Navbar>
         <div className='profile'>
             <label htmlFor="file">
@@ -122,19 +123,34 @@ export default function ProfilePage() {
               if(experience.Active){
                 return(
                   <p key={experience.ID} className='text-black mb-20 text-m'>{experience.Description} at {experience.CompanyName}</p>
-                )
-              }
-            })}
+                  )
+                }
+              })}
             <input disabled={!MyProfile} type="file" name='file' id='file' className='invisible' onChange={(e)=>{handleFileChange(e)}}/>
+            {(MyProfile!=true && !User.connect_request.includes(userContext.user.id)&&!User.connected_user.includes(userContext.user.id)) && (
+              <div>
+                <button onClick={()=>{requestConnection({variables:{id:userContext.user.id, recepient:User.id}}).then(()=>{user.refetch()})}} className='blue-button-smaller text-white'>Request Connection</button>
+              </div>
+            )}
+            {(MyProfile!=true && User.connect_request.includes(userContext.user.id)) && (
+              <div>
+                <button className='grey-button-smaller text-white'>Requested</button>
+              </div>
+            )}
+            {(MyProfile!=true && User.connected_user.includes(userContext.user.id)) && (
+              <div>
+                <button className='white-button-smaller text-white'>Connected</button>
+              </div>
+            )}
         </div>
 
         <div className='profile'>
           <div className='flex-row w-full space-between'>
             <p className='text-black text-l bold mb-20'>Education</p>
             {MyProfile === true && (
-            <button className='add-button' onClick={toggleCreateEducation}>
-              <AiOutlinePlus className='plus-logo' ></AiOutlinePlus>
-            </button>
+              <button className='add-button' onClick={toggleCreateEducation}>
+                <AiOutlinePlus className='plus-logo' ></AiOutlinePlus>
+              </button>
             )}
           </div>
           {UserEducations.length===0 && (
@@ -151,7 +167,7 @@ export default function ProfilePage() {
             <p className='text-black text-l bold mb-20'>Experiences</p>
             {MyProfile === true && (
             <button className='add-button' onClick={toggleCreateExperience}>
-              <AiOutlinePlus className='plus-logo' ></AiOutlinePlus>
+              <AiOutlinePlus className='plus-logo'></AiOutlinePlus>
             </button>
             )}
           </div>

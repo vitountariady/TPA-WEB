@@ -13,7 +13,7 @@ func UserCreate(ctx context.Context, input model.NewUser) (*model.User, error) {
 	db := config.GetDB()
 
 	input.Password = tools.HashPassword(input.Password)
-	var emptyStringArr []string
+	var emptyStringArr = []string{}
 	user := model.User{
 		ID:                uuid.NewString(),
 		Email:             input.Email,

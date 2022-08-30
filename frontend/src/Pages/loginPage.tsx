@@ -16,7 +16,7 @@ export default function LoginPage(){
                     password: (document.getElementById("password") as HTMLInputElement).value}
             }
         ).then((x)=>{
-            // console.log("sudah login")
+            console.log(x.data.Login.user)
             userContext.setUser(x.data.Login.user)
             userContext.setToken(x.data.Login.token)
             navigate('/home')

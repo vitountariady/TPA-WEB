@@ -103,7 +103,10 @@ export const getUserByID = gql`
       last_name,
       password,
       activated,
-      profile_picture_url
+      profile_picture_url,
+      followed_user,
+      connected_user,
+      connect_request
     }
   }
 `
@@ -169,5 +172,17 @@ export const updateExperience = gql`
       Industry:$Industry,
       Description:$Description
     })
+  }
+`
+
+export const requestConnect = gql`
+  mutation requestConnect($id :String!, $recepient:String!){
+    RequestConnect(id:$id, recepientID:$recepient)
+  }
+`
+
+export const acceptConnect = gql`
+  mutation acceptConnect($id:String!, $sender:String!){
+    AcceptConnect(id:$id, senderID:$sender)
   }
 `

@@ -6,7 +6,8 @@ import LoginPage from './Pages/loginPage'
 import RegisterPage from './Pages/RegisterPage'
 import Homepage from './Pages/Homepage'
 import ProfilePage from './Pages/ProfilePage'
-import AuthContextProvider, { UserAuth } from '../contexts/authContext'
+import { UserAuth } from '../contexts/authContext'
+import RefetchContextProvider from '../contexts/refetcher'
 import {ProtectedRoute, UnprotectedRoute} from '../contexts/middleware'
 import { Activate } from '../queries/queries'
 import ActivationPage from './Pages/ActivationPage'
@@ -15,6 +16,8 @@ import ResetPasswordPage from './Pages/ResetPassword'
 import Error404Page from './Pages/Error404Page'
 import { ApolloClient, ApolloLink, ApolloProvider, createHttpLink, InMemoryCache } from '@apollo/client'
 import { FaYoutubeSquare } from 'react-icons/fa'
+import MyNetworkPage from './Pages/MyNetworkPage'
+import MyNetwork from './Pages/MyNetworkPage'
 
 const Protected = () =>{
   return(
@@ -38,7 +41,7 @@ function App() {
   const url = main_url + "/query";
   const userContext = UserAuth();
   const authLink = new ApolloLink((operation:any, forward:any)=>{
-    if(userContext.user && userContext.token!==undefined){
+    if(userContext.user && userContext.token!==undefined && Object.keys(userContext.token).length!==0){
       operation.setContext({
         headers:{
           Authorization: `Bearer ${userContext.token}`,
@@ -60,6 +63,7 @@ function App() {
 
   return (
     <ApolloProvider client={client}>
+      <RefetchContextProvider>
         <Routes>
           <Route path="/activate/:id" element={<ActivationPage></ActivationPage>}></Route>
           <Route element={<Unprotected/>}>
@@ -69,11 +73,13 @@ function App() {
             <Route path="/resetPassword/:id" element={<ResetPasswordPage></ResetPasswordPage>}></Route>
           </Route>
           <Route element={<Protected/>}>
+            <Route path="/mynetwork" element={<MyNetwork></MyNetwork>}></Route>
             <Route path="/home" element={<Homepage></Homepage>}></Route>
             <Route path="/profile/:id" element={<ProfilePage></ProfilePage>}></Route>
           </Route>
           <Route path="*" element={<Error404Page></Error404Page>}></Route>
         </Routes>
+      </RefetchContextProvider>
     </ApolloProvider>
   )
 }

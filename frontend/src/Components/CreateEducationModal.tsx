@@ -60,12 +60,12 @@ export default function CreateEducationModal(parameter:any) {
 
                 <div className='w-full flex-row space-between mb-20'>
                     <p className='text-black text-s'>Start Year</p>
-                    <input type="number" id='StartDate'className='white-bg text-black text-s border-sering-pake'placeholder='2020'/>
+                    <input type="number" id='StartDate'className='white-bg text-black text-s border-sering-pake'defaultValue='2020'/>
                 </div>
 
                 <div className='w-full flex-row space-between mb-20'>
                     <p className='text-black text-s'>End Year</p>
-                    <input type="number" id='EndDate'className='white-bg text-black text-s border-sering-pake'placeholder='2022'/>
+                    <input type="number" id='EndDate'className='white-bg text-black text-s border-sering-pake'defaultValue='2022'/>
                 </div>
 
                 <div className='w-full flex-col'>

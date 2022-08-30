@@ -1,14 +1,15 @@
 //Colors
 $black:#000000;
 $white:#ffffff;
-$grey-light: #ededed;
 $blue: #0077B5;
 $blue-light: #00A0DC;
 $blue-dark: #0766be;
 $red: rgb(255, 0, 0);
 $red-light: rgb(250, 100, 100);
 $red-dark: rgb(150, 0, 0);
-$grey: rgb(120, 100, 100);
+$grey: #388080;
+$grey-dark: rgb(120, 100, 100);
+$grey-light: #ededed;
 
 //text
 .bold{
@@ -98,7 +99,6 @@ p{
 //components
 .EducationOrExperience{
     width: 100%;
-    padding: 5px;
     margin-bottom: 20px;
     display: flex;
     flex-direction: row;
@@ -151,7 +151,7 @@ p{
         width:25px;
         height: 25px;
         // border-radius: 100%;
-        fill: $grey;
+        fill: $grey-dark;
     }
     .navbar-picture{
         width:25px;
@@ -160,7 +160,7 @@ p{
         border :black solid 1px;
     }
     .item-label{
-        color: $grey;
+        color: $grey-dark;
         font-size: 12px;
         margin: 3px;
     }
@@ -205,7 +205,7 @@ p{
 
 .icon{
     scale: 170%;
-    fill: $grey;
+    fill: $grey-dark;
     &:hover{
         fill: $black;
     }
@@ -289,12 +289,33 @@ p{
     justify-content: center;
     align-items: start;
     border-radius: 15px;
-    .profile-picture{
-        width: 150px;
-        height: 150px;
-        border-radius: 100%;
-        border: white 1px solid
-    }
+}
+
+.main-container{
+    padding: 30px;
+    width: 40%;
+    margin:20px;
+    height: fit-content;
+    border: black solid 1px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    border-radius: 15px;
+}
+
+.profile-picture{
+    width: 150px;
+    height: 150px;
+    border-radius: 100%;
+    border: white 1px solid
+}
+
+.profile-picture-small{
+    width: 70px;
+    height: 70px;
+    border-radius: 100%;
+    border: white 1px solid
 }
 
 
@@ -312,6 +333,10 @@ p{
 
 .w-full{
     width: 100%;
+}
+
+.w-80{
+    width: 80%;
 }
 
 .w-fit{
@@ -359,7 +384,7 @@ p{
         background-color: $grey-light;
     }
     &:active{
-        background-color: $grey;
+        background-color: $grey-dark;
         .plus-logo{
             fill: wheat;
             scale: 150%;
@@ -368,7 +393,6 @@ p{
 }
 
 .blue-button{
-    margin-top: 20px;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
@@ -388,13 +412,12 @@ p{
 }
 
 .blue-button-smaller{
-    margin-top: 20px;
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
     font-size: 20px;
-    width: 100px;
+    min-width: 100px;
     height: 40px;
     border-radius: 35px;
     background-color: $blue;
@@ -407,14 +430,25 @@ p{
     }
 }
 
-.red-button-smaller{
-    margin-top: 20px;
+.grey-button-smaller{
     display: flex;
     flex-direction: row;
     justify-content: space-evenly;
     align-items: center;
     font-size: 20px;
-    width: 100px;
+    min-width: 100px;
+    height: 40px;
+    border-radius: 35px;
+    background-color: $grey;
+}
+
+.red-button-smaller{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: 20px;
+    min-width: 100px;
     height: 40px;
     border-radius: 35px;
     background-color: $red;
@@ -424,6 +458,27 @@ p{
     }
     &:active{
         background-color: $red-dark;
+    }
+}
+
+.white-button-smaller{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+    align-items: center;
+    font-size: 20px;
+    min-width: 100px;
+    height: 40px;
+    border-radius: 35px;
+    background-color: $white;
+    border: 1px solid black;
+    color: #000000;
+
+    &:hover{
+        color: $blue-light;
+    }
+    &:active{
+        color: $blue-dark;
     }
 }
 
@@ -455,9 +510,19 @@ p{
     margin-bottom: 30px;
 }
 
+.mh-10{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
 .mh-20{
     margin-left: 20px;
     margin-right: 20px;
+}
+
+.mh-30{
+    margin-left: 30px;
+    margin-right: 30px;
 }
 
 .mv-30{
@@ -476,6 +541,7 @@ p{
 }
 
 
+
 //display
 .invisible{
     display:none
@@ -483,7 +549,7 @@ p{
 
 //borders
 .border-sering-pake{
-    border: 1px solid $grey;
+    border: 1px solid $grey-dark;
     border-radius: 5px;
     padding: 5px;
 }

@@ -5,8 +5,10 @@ import { updateExperience } from '../../queries/queries'
 
 export default function UpdateExperienceModal(parameter:any) {
     const [update] = useMutation(updateExperience);
-    const [ActiveJob, setActiveJob] = useState(false);
+    const [ActiveJob, setActiveJob] = useState(parameter.experience.Active);
     const userContext = UserAuth();
+
+    console.log(parameter.experience.Active)
 
     const handleUpdate = () =>{
         const title = (document.getElementById("Title") as HTMLInputElement).value
@@ -73,7 +75,7 @@ export default function UpdateExperienceModal(parameter:any) {
 
                 <div className='w-full flex-row'>
                     <p className='text-black text-s'>This is my current active job</p>
-                    <input onClick={()=>{setActiveJob((document.getElementById("Active") as HTMLInputElement).checked)}} id='Active' type="checkbox" className='text-input white-bg' defaultValue={parameter.experience.Active}/>
+                    <input onClick={()=>{setActiveJob((document.getElementById("Active") as HTMLInputElement).checked)}} id='Active' type="checkbox" className='text-input white-bg' defaultChecked={parameter.experience.Active}/>
                 </div>
 
                 <div className='w-full flex-row space-between mb-20'>

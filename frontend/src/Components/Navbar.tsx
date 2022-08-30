@@ -55,7 +55,7 @@ export default function Navbar() {
           <p className='item-label'>Profile</p>
         </NavLink> */}
         <NavLink to={"/profile/"+userContext.user.id} onMouseEnter={()=>{setDropdown(true)}} onMouseLeave={()=>{setDropdown(false)}} className= {handleActivePage}>
-          <img src={userContext.user.profile_picture} className='navbar-picture'></img>
+          <img src={userContext.user.profile_picture_url} className='navbar-picture'></img>
           <p className='item-label'>{userContext.user.first_name}</p>
           {Dropdown && (
             <div className='dropdown'>
