@@ -86,13 +86,17 @@ type ComplexityRoot struct {
 		CreateLink            func(childComplexity int, userID string) int
 		DeleteEducation       func(childComplexity int, id string) int
 		DeleteExperience      func(childComplexity int, id string) int
+		Follow                func(childComplexity int, id string, follow string) int
 		GenerateResetPassLink func(childComplexity int, userEmail string) int
+		IgnoreConnect         func(childComplexity int, id string, senderID string) int
 		Login                 func(childComplexity int, email string, password string) int
 		Register              func(childComplexity int, input model.NewUser) int
 		RequestConnect        func(childComplexity int, id string, recepientID string) int
 		ResetPassword         func(childComplexity int, id string, newPassword string) int
+		Unfollow              func(childComplexity int, id string, unfollow string) int
 		UpdateEducation       func(childComplexity int, id string, input model.NewEducation) int
 		UpdateExperience      func(childComplexity int, id string, input model.NewExperience) int
+		UploadBanner          func(childComplexity int, id string, newBanner string) int
 		UploadProfilePic      func(childComplexity int, id string, newProfilePicture string) int
 	}
 
@@ -108,6 +112,7 @@ type ComplexityRoot struct {
 
 	User struct {
 		Activated         func(childComplexity int) int
+		BannerURL         func(childComplexity int) int
 		ConnectRequest    func(childComplexity int) int
 		ConnectedUser     func(childComplexity int) int
 		Email             func(childComplexity int) int
@@ -126,8 +131,12 @@ type MutationResolver interface {
 	ActivateAccount(ctx context.Context, id string) (interface{}, error)
 	ResetPassword(ctx context.Context, id string, newPassword string) (string, error)
 	UploadProfilePic(ctx context.Context, id string, newProfilePicture string) (string, error)
+	UploadBanner(ctx context.Context, id string, newBanner string) (string, error)
 	RequestConnect(ctx context.Context, id string, recepientID string) (string, error)
 	AcceptConnect(ctx context.Context, id string, senderID string) (string, error)
+	IgnoreConnect(ctx context.Context, id string, senderID string) (string, error)
+	Follow(ctx context.Context, id string, follow string) (string, error)
+	Unfollow(ctx context.Context, id string, unfollow string) (string, error)
 	CreateEducation(ctx context.Context, input model.NewEducation) (string, error)
 	UpdateEducation(ctx context.Context, id string, input model.NewEducation) (string, error)
 	DeleteEducation(ctx context.Context, id string) (string, error)
@@ -412,6 +421,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.DeleteExperience(childComplexity, args["id"].(string)), true
 
+	case "Mutation.Follow":
+		if e.complexity.Mutation.Follow == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_Follow_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.Follow(childComplexity, args["id"].(string), args["follow"].(string)), true
+
 	case "Mutation.generateResetPassLink":
 		if e.complexity.Mutation.GenerateResetPassLink == nil {
 			break
@@ -423,6 +444,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.GenerateResetPassLink(childComplexity, args["userEmail"].(string)), true
+
+	case "Mutation.IgnoreConnect":
+		if e.complexity.Mutation.IgnoreConnect == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_IgnoreConnect_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.IgnoreConnect(childComplexity, args["id"].(string), args["senderID"].(string)), true
 
 	case "Mutation.Login":
 		if e.complexity.Mutation.Login == nil {
@@ -472,6 +505,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 
 		return e.complexity.Mutation.ResetPassword(childComplexity, args["id"].(string), args["newPassword"].(string)), true
 
+	case "Mutation.Unfollow":
+		if e.complexity.Mutation.Unfollow == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_Unfollow_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.Unfollow(childComplexity, args["id"].(string), args["unfollow"].(string)), true
+
 	case "Mutation.updateEducation":
 		if e.complexity.Mutation.UpdateEducation == nil {
 			break
@@ -495,6 +540,18 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.Mutation.UpdateExperience(childComplexity, args["id"].(string), args["input"].(model.NewExperience)), true
+
+	case "Mutation.UploadBanner":
+		if e.complexity.Mutation.UploadBanner == nil {
+			break
+		}
+
+		args, err := ec.field_Mutation_UploadBanner_args(context.TODO(), rawArgs)
+		if err != nil {
+			return 0, false
+		}
+
+		return e.complexity.Mutation.UploadBanner(childComplexity, args["id"].(string), args["newBanner"].(string)), true
 
 	case "Mutation.UploadProfilePic":
 		if e.complexity.Mutation.UploadProfilePic == nil {
@@ -583,6 +640,13 @@ func (e *executableSchema) Complexity(typeName, field string, childComplexity in
 		}
 
 		return e.complexity.User.Activated(childComplexity), true
+
+	case "User.banner_url":
+		if e.complexity.User.BannerURL == nil {
+			break
+		}
+
+		return e.complexity.User.BannerURL(childComplexity), true
 
 	case "User.connect_request":
 		if e.complexity.User.ConnectRequest == nil {
@@ -819,6 +883,7 @@ type User{
   password:String!
   activated: Boolean!
   profile_picture_url: String!
+  banner_url: String!
   followed_user: [String!]!
   connected_user: [String!]!
   connect_request: [String!]!
@@ -836,8 +901,12 @@ type Mutation{
   ActivateAccount(id:ID!):Any!
   ResetPassword(id: String!, newPassword:String!):String!
   UploadProfilePic(id:String!, newProfilePicture:String!):String!
+  UploadBanner(id:String!, newBanner:String!):String!
   RequestConnect(id:String!, recepientID:String!):String!
   AcceptConnect(id:String!, senderID:String!):String!
+  IgnoreConnect(id:String!, senderID:String!):String!
+  Follow(id:String!, follow:String!):String!
+  Unfollow(id:String!, unfollow:String!):String!
 }
 
 input newUser{
@@ -889,6 +958,54 @@ func (ec *executionContext) field_Mutation_ActivateAccount_args(ctx context.Cont
 		}
 	}
 	args["id"] = arg0
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_Follow_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["follow"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("follow"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["follow"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_IgnoreConnect_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["senderID"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("senderID"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["senderID"] = arg1
 	return args, nil
 }
 
@@ -976,6 +1093,54 @@ func (ec *executionContext) field_Mutation_ResetPassword_args(ctx context.Contex
 		}
 	}
 	args["newPassword"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_Unfollow_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["unfollow"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("unfollow"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["unfollow"] = arg1
+	return args, nil
+}
+
+func (ec *executionContext) field_Mutation_UploadBanner_args(ctx context.Context, rawArgs map[string]interface{}) (map[string]interface{}, error) {
+	var err error
+	args := map[string]interface{}{}
+	var arg0 string
+	if tmp, ok := rawArgs["id"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("id"))
+		arg0, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["id"] = arg0
+	var arg1 string
+	if tmp, ok := rawArgs["newBanner"]; ok {
+		ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("newBanner"))
+		arg1, err = ec.unmarshalNString2string(ctx, tmp)
+		if err != nil {
+			return nil, err
+		}
+	}
+	args["newBanner"] = arg1
 	return args, nil
 }
 
@@ -2541,6 +2706,61 @@ func (ec *executionContext) fieldContext_Mutation_UploadProfilePic(ctx context.C
 	return fc, nil
 }
 
+func (ec *executionContext) _Mutation_UploadBanner(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_UploadBanner(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().UploadBanner(rctx, fc.Args["id"].(string), fc.Args["newBanner"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_UploadBanner(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_UploadBanner_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
 func (ec *executionContext) _Mutation_RequestConnect(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
 	fc, err := ec.fieldContext_Mutation_RequestConnect(ctx, field)
 	if err != nil {
@@ -2645,6 +2865,171 @@ func (ec *executionContext) fieldContext_Mutation_AcceptConnect(ctx context.Cont
 	}()
 	ctx = graphql.WithFieldContext(ctx, fc)
 	if fc.Args, err = ec.field_Mutation_AcceptConnect_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_IgnoreConnect(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_IgnoreConnect(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().IgnoreConnect(rctx, fc.Args["id"].(string), fc.Args["senderID"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_IgnoreConnect(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_IgnoreConnect_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_Follow(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_Follow(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Follow(rctx, fc.Args["id"].(string), fc.Args["follow"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_Follow(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_Follow_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
+		ec.Error(ctx, err)
+		return
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _Mutation_Unfollow(ctx context.Context, field graphql.CollectedField) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_Mutation_Unfollow(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return ec.resolvers.Mutation().Unfollow(rctx, fc.Args["id"].(string), fc.Args["unfollow"].(string))
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_Mutation_Unfollow(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "Mutation",
+		Field:      field,
+		IsMethod:   true,
+		IsResolver: true,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	defer func() {
+		if r := recover(); r != nil {
+			err = ec.Recover(ctx, r)
+			ec.Error(ctx, err)
+		}
+	}()
+	ctx = graphql.WithFieldContext(ctx, fc)
+	if fc.Args, err = ec.field_Mutation_Unfollow_args(ctx, field.ArgumentMap(ec.Variables)); err != nil {
 		ec.Error(ctx, err)
 		return
 	}
@@ -3270,6 +3655,8 @@ func (ec *executionContext) fieldContext_Query_Users(ctx context.Context, field 
 				return ec.fieldContext_User_activated(ctx, field)
 			case "profile_picture_url":
 				return ec.fieldContext_User_profile_picture_url(ctx, field)
+			case "banner_url":
+				return ec.fieldContext_User_banner_url(ctx, field)
 			case "followed_user":
 				return ec.fieldContext_User_followed_user(ctx, field)
 			case "connected_user":
@@ -3336,6 +3723,8 @@ func (ec *executionContext) fieldContext_Query_getUser(ctx context.Context, fiel
 				return ec.fieldContext_User_activated(ctx, field)
 			case "profile_picture_url":
 				return ec.fieldContext_User_profile_picture_url(ctx, field)
+			case "banner_url":
+				return ec.fieldContext_User_banner_url(ctx, field)
 			case "followed_user":
 				return ec.fieldContext_User_followed_user(ctx, field)
 			case "connected_user":
@@ -4192,6 +4581,50 @@ func (ec *executionContext) _User_profile_picture_url(ctx context.Context, field
 }
 
 func (ec *executionContext) fieldContext_User_profile_picture_url(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
+	fc = &graphql.FieldContext{
+		Object:     "User",
+		Field:      field,
+		IsMethod:   false,
+		IsResolver: false,
+		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
+			return nil, errors.New("field of type String does not have child fields")
+		},
+	}
+	return fc, nil
+}
+
+func (ec *executionContext) _User_banner_url(ctx context.Context, field graphql.CollectedField, obj *model.User) (ret graphql.Marshaler) {
+	fc, err := ec.fieldContext_User_banner_url(ctx, field)
+	if err != nil {
+		return graphql.Null
+	}
+	ctx = graphql.WithFieldContext(ctx, fc)
+	defer func() {
+		if r := recover(); r != nil {
+			ec.Error(ctx, ec.Recover(ctx, r))
+			ret = graphql.Null
+		}
+	}()
+	resTmp, err := ec.ResolverMiddleware(ctx, func(rctx context.Context) (interface{}, error) {
+		ctx = rctx // use context from middleware stack in children
+		return obj.BannerURL, nil
+	})
+	if err != nil {
+		ec.Error(ctx, err)
+		return graphql.Null
+	}
+	if resTmp == nil {
+		if !graphql.HasFieldError(ctx, fc) {
+			ec.Errorf(ctx, "must not be null")
+		}
+		return graphql.Null
+	}
+	res := resTmp.(string)
+	fc.Result = res
+	return ec.marshalNString2string(ctx, field.Selections, res)
+}
+
+func (ec *executionContext) fieldContext_User_banner_url(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
 	fc = &graphql.FieldContext{
 		Object:     "User",
 		Field:      field,
@@ -6649,6 +7082,15 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 			if out.Values[i] == graphql.Null {
 				invalids++
 			}
+		case "UploadBanner":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_UploadBanner(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
 		case "RequestConnect":
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
@@ -6662,6 +7104,33 @@ func (ec *executionContext) _Mutation(ctx context.Context, sel ast.SelectionSet)
 
 			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
 				return ec._Mutation_AcceptConnect(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "IgnoreConnect":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_IgnoreConnect(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "Follow":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_Follow(ctx, field)
+			})
+
+			if out.Values[i] == graphql.Null {
+				invalids++
+			}
+		case "Unfollow":
+
+			out.Values[i] = ec.OperationContext.RootResolverMiddleware(innerCtx, func(ctx context.Context) (res graphql.Marshaler) {
+				return ec._Mutation_Unfollow(ctx, field)
 			})
 
 			if out.Values[i] == graphql.Null {
@@ -7008,6 +7477,13 @@ func (ec *executionContext) _User(ctx context.Context, sel ast.SelectionSet, obj
 		case "profile_picture_url":
 
 			out.Values[i] = ec._User_profile_picture_url(ctx, field, obj)
+
+			if out.Values[i] == graphql.Null {
+				atomic.AddUint32(&invalids, 1)
+			}
+		case "banner_url":
+
+			out.Values[i] = ec._User_banner_url(ctx, field, obj)
 
 			if out.Values[i] == graphql.Null {
 				atomic.AddUint32(&invalids, 1)

@@ -14,6 +14,7 @@ type User{
   password:String!
   activated: Boolean!
   profile_picture_url: String!
+  banner_url: String!
   followed_user: [String!]!
   connected_user: [String!]!
   connect_request: [String!]!
@@ -31,8 +32,12 @@ type Mutation{
   ActivateAccount(id:ID!):Any!
   ResetPassword(id: String!, newPassword:String!):String!
   UploadProfilePic(id:String!, newProfilePicture:String!):String!
+  UploadBanner(id:String!, newBanner:String!):String!
   RequestConnect(id:String!, recepientID:String!):String!
   AcceptConnect(id:String!, senderID:String!):String!
+  IgnoreConnect(id:String!, senderID:String!):String!
+  Follow(id:String!, follow:String!):String!
+  Unfollow(id:String!, unfollow:String!):String!
 }
 
 input newUser{

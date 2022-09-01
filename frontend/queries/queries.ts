@@ -45,6 +45,12 @@ export const uploadProfilePicture = gql`
   }
 `
 
+export const uploadBanner = gql`
+  mutation uploadBanner($id:String!, $newBanner:String!){
+    UploadBanner(id:$id, newBanner:$newBanner)
+  }
+`
+
 export const createEducation = gql`
   mutation createEducation ($UserID:ID!, $School:String!, $Degree:String!, $FieldOfStudy:String!, $StartDate:String!, $EndDate:String!, $Grade:Float!, $Activities:String!, $Description:String!){
     createEducation(input:{
@@ -104,6 +110,7 @@ export const getUserByID = gql`
       password,
       activated,
       profile_picture_url,
+      banner_url,
       followed_user,
       connected_user,
       connect_request
@@ -184,5 +191,17 @@ export const requestConnect = gql`
 export const acceptConnect = gql`
   mutation acceptConnect($id:String!, $sender:String!){
     AcceptConnect(id:$id, senderID:$sender)
+  }
+`
+
+export const follow = gql `
+  mutation follow($id:String!, $follow:String!){
+    Follow(id:$id, follow:$follow)
+  }
+`
+
+export const unfollow = gql `
+  mutation unfollow($id:String!, $unfollow:String!){
+    Unfollow(id:$id, unfollow:$unfollow)
   }
 `

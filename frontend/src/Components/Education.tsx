@@ -1,5 +1,5 @@
 import { useMutation } from '@apollo/client'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {AiFillEdit} from 'react-icons/ai'
 import {BiTrash} from 'react-icons/bi'
 import { deleteEducation } from '../../queries/queries'
@@ -14,6 +14,14 @@ export default function Education(parameter:any) {
       parameter.refetch()
     })
   }
+
+  useEffect(() => {
+    if(updateModal === true){
+        document.body.style.overflow="hidden";
+    }else{
+        document.body.style.overflow = "visible"
+    }
+  }, [updateModal])
 
   const toggleUpdateModal= ()=>{
     setupdateModal(!updateModal)

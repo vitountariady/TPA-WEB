@@ -10,7 +10,7 @@ export default function ConnectRequest(parameter:any) {
         id:"",
         first_name: "",
         last_name: "",
-        profile_picture_url: "https://firebasestorage.googleapis.com/v0/b/linkhedin-vt.appspot.com/o/profilePictures%2Fdefault.jpg?alt=media&token=140c66e3-a51d-47ae-aaef-00ad043d2bd0"
+        profile_picture_url: "https://firebasestorage.googleapis.com/v0/b/linkhedin-vt.appspot.com/o/profilePictures%2Fdefault.jpg?alt=media&token=10a15675-4c98-454a-8bdd-bc5914611547"
     })
 
     const userContext = UserAuth();

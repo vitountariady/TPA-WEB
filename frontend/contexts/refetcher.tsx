@@ -1,5 +1,5 @@
 import { useQuery } from '@apollo/client'
-import React, { createContext, useContext } from 'react'
+import React, { createContext, useContext, useEffect } from 'react'
 import { getUserByID } from '../queries/queries';
 import { UserAuth } from './authContext'
 
@@ -11,10 +11,16 @@ export default function RefetchContextProvider({children}:any){
 
     const refetchUser = () =>{
         userFromDB.refetch().then((x)=>{
-            console.log(x);
             userContext.setUser(x.data.getUser)
         })
     }
+
+    // useEffect(() => {
+    //     userFromDB.refetch().then((x)=>{
+    //         userContext.setUser(x.data)
+    //     })
+    // }, [userFromDB.data])
+    
 
     return(
         <Refetcher.Provider value={{refetchUser}}>

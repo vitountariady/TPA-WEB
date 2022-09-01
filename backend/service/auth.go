@@ -21,6 +21,17 @@ func UploadProfilePicture(ctx context.Context, id string, newProfilePicture stri
 	return "Profile Picture Update successful", nil
 }
 
+func UploadBanner(ctx context.Context, id string, newBanner string) (string, error) {
+	user, err := GetUserById(ctx, id)
+	db := config.GetDB()
+	if err != nil {
+		return "", err
+	}
+	user.BannerURL = (newBanner)
+	db.Save(&user)
+	return "Banner Update successful", nil
+}
+
 func ResetPassword(ctx context.Context, id string, newPassword string) (string, error) {
 	user, err := GetUserById(ctx, id)
 	link := new(model.Link)

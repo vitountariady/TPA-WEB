@@ -10,6 +10,7 @@ $red-dark: rgb(150, 0, 0);
 $grey: #388080;
 $grey-dark: rgb(120, 100, 100);
 $grey-light: #ededed;
+$beige: #f3f2ef;
 
 //text
 .bold{
@@ -30,6 +31,10 @@ $grey-light: #ededed;
 
 .text-s{
     font-size:15px
+}
+
+.text-xs{
+    font-size:10px
 }
 
 .text-black{
@@ -59,6 +64,10 @@ p{
 
 .white-bg{
     background-color: $white;
+}
+
+.beige-bg{
+    background-color: $beige;
 }
 
 //container
@@ -280,42 +289,57 @@ p{
 
 .profile{
     padding: 30px;
-    width: 60%;
+    width: 750px;
     margin:20px;
     height: fit-content;
-    border: black solid 1px;
+    // border: black solid 1px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: start;
     border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
+}
+
+.main-profile{
+    width: 810px;
+    margin:20px;
+    height: fit-content;
+    // border: black solid 1px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: start;
+    border-radius: 15px;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
 }
 
 .main-container{
     padding: 30px;
-    width: 40%;
+    width: 600px;
     margin:20px;
     height: fit-content;
-    border: black solid 1px;
+    // border: black solid 1px;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: start;
+    box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
     border-radius: 15px;
 }
 
 .profile-picture{
-    width: 150px;
-    height: 150px;
+    width: 160px;
+    height: 160px;
     border-radius: 100%;
-    border: white 1px solid
+    border: $white 2px solid
 }
 
 .profile-picture-small{
     width: 70px;
     height: 70px;
     border-radius: 100%;
-    border: white 1px solid
+    border: $white 1px solid
 }
 
 
@@ -392,6 +416,33 @@ p{
     }
 }
 
+.picture-btn{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 10px;
+    width: 25px;
+    height:25px;
+    padding: 10px;
+    background-color: $white;
+    border-radius: 100%;
+    .logo{
+        fill: $black;
+        scale: 200%;
+    }
+    &:hover{
+        background-color: $beige;
+    }
+    &:active{
+        background-color: $grey;
+        .logo{
+            fill: wheat;
+            scale: 200%;
+        }
+    }
+}
+
 .blue-button{
     display: flex;
     flex-direction: row;
@@ -417,7 +468,7 @@ p{
     justify-content: space-evenly;
     align-items: center;
     font-size: 20px;
-    min-width: 100px;
+    min-width: 150px;
     height: 40px;
     border-radius: 35px;
     background-color: $blue;
@@ -436,7 +487,7 @@ p{
     justify-content: space-evenly;
     align-items: center;
     font-size: 20px;
-    min-width: 100px;
+    min-width: 150px;
     height: 40px;
     border-radius: 35px;
     background-color: $grey;
@@ -448,7 +499,7 @@ p{
     justify-content: space-evenly;
     align-items: center;
     font-size: 20px;
-    min-width: 100px;
+    min-width: 150px;
     height: 40px;
     border-radius: 35px;
     background-color: $red;
@@ -467,7 +518,7 @@ p{
     justify-content: space-evenly;
     align-items: center;
     font-size: 20px;
-    min-width: 100px;
+    min-width: 150px;
     height: 40px;
     border-radius: 35px;
     background-color: $white;
@@ -491,13 +542,30 @@ p{
     padding: 10px;
 }
 
+.p-20{
+    padding: 20px;
+}
+
+.ph-10{
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .pv-5{
     padding-top: 5px;
     padding-bottom: 5px;
 }
+.pv-20{
+    padding-top: 20px;
+    padding-bottom: 20px;
+}
 
 
 //margins
+.m-20{
+    margin: 20px;
+}
+
 .mb-10{
     margin-bottom: 10px;
 }
@@ -552,4 +620,9 @@ p{
     border: 1px solid $grey-dark;
     border-radius: 5px;
     padding: 5px;
+}
+
+//position
+.abs{
+    position: absolute;
 }

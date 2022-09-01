@@ -1,14 +1,19 @@
 import { useQuery } from '@apollo/client';
 import React, { useEffect, useState } from 'react'
 import { UserAuth } from '../../contexts/authContext'
+import { RefetchContext } from '../../contexts/refetcher';
 import { getUserByID } from '../../queries/queries';
 import ConnectRequest from '../Components/ConnectRequest';
 import Navbar from '../Components/Navbar'
 
 export default function MyNetwork() {
     const userContext= UserAuth();
-    const [ConnectRequests, setConnectRequests] = useState([]);
-
+    const refetchContext= RefetchContext();
+    
+    useEffect(() => {
+        refetchContext.refetchUser();
+    }, [])
+    
     return (
         <div className='white-bg fullscreen center-col'>
             <Navbar></Navbar>

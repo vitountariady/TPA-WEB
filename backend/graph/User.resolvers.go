@@ -46,6 +46,11 @@ func (r *mutationResolver) UploadProfilePic(ctx context.Context, id string, newP
 	return service.UploadProfilePicture(ctx, id, newProfilePicture)
 }
 
+// UploadBanner is the resolver for the UploadBanner field.
+func (r *mutationResolver) UploadBanner(ctx context.Context, id string, newBanner string) (string, error) {
+	return service.UploadBanner(ctx, id, newBanner)
+}
+
 // RequestConnect is the resolver for the RequestConnect field.
 func (r *mutationResolver) RequestConnect(ctx context.Context, id string, recepientID string) (string, error) {
 	user := new(model.User)
@@ -67,36 +72,88 @@ func (r *mutationResolver) AcceptConnect(ctx context.Context, id string, senderI
 	if err := r.DB.First(sender, "id=?", senderID).Error; err != nil {
 		return "failed", err
 	}
-	fmt.Println(recepient.ID)
-	fmt.Println(len(recepient.ConnectRequest))
 	new_arr := make([]string, (len(recepient.ConnectRequest) - 1))
-	found := false
 	k := 0
 	for i := 0; i < (len(recepient.ConnectRequest) - 1); {
-		fmt.Println(recepient.ConnectRequest[i])
 		if recepient.ConnectRequest[i] != senderID {
 			new_arr[i] = recepient.ConnectRequest[k]
 			k++
 			i++
 		} else {
-			found = true
 			k++
 		}
 	}
-	if !found {
-		recepient.ConnectRequest = new_arr
-		sender.ConnectedUser = append(sender.ConnectedUser, id)
-		recepient.ConnectedUser = append(recepient.ConnectedUser, senderID)
-		if err := r.DB.Save(recepient).Error; err != nil {
-			return "failed", err
-		}
-		if err := r.DB.Save(sender).Error; err != nil {
-			return "failed", err
-		}
-		return "Success", nil
-	} else {
-		return "no request", nil
+	recepient.ConnectRequest = new_arr
+	sender.ConnectedUser = append(sender.ConnectedUser, id)
+	recepient.ConnectedUser = append(recepient.ConnectedUser, senderID)
+	if err := r.DB.Save(recepient).Error; err != nil {
+		return "failed", err
 	}
+	if err := r.DB.Save(sender).Error; err != nil {
+		return "failed", err
+	}
+	return "Success", nil
+}
+
+// IgnoreConnect is the resolver for the IgnoreConnect field.
+func (r *mutationResolver) IgnoreConnect(ctx context.Context, id string, senderID string) (string, error) {
+	recepient := new(model.User)
+	if err := r.DB.First(recepient, "id=?", id).Error; err != nil {
+		return "failed", err
+	}
+	new_arr := make([]string, (len(recepient.ConnectRequest) - 1))
+	k := 0
+	for i := 0; i < (len(recepient.ConnectRequest) - 1); {
+		if recepient.ConnectRequest[i] != senderID {
+			new_arr[i] = recepient.ConnectRequest[k]
+			k++
+			i++
+		} else {
+			k++
+		}
+	}
+	recepient.ConnectRequest = new_arr
+	if err := r.DB.Save(recepient).Error; err != nil {
+		return "failed", err
+	}
+	return "success", nil
+}
+
+// Follow is the resolver for the Follow field.
+func (r *mutationResolver) Follow(ctx context.Context, id string, follow string) (string, error) {
+	user := new(model.User)
+	if err := r.DB.First(user, "id=?", id).Error; err != nil {
+		return "failed", err
+	}
+	user.FollowedUser = append(user.FollowedUser, follow)
+	if err := r.DB.Save(user).Error; err != nil {
+		return "failed", err
+	}
+	return "success", nil
+}
+
+// Unfollow is the resolver for the Unfollow field.
+func (r *mutationResolver) Unfollow(ctx context.Context, id string, unfollow string) (string, error) {
+	user := new(model.User)
+	if err := r.DB.First(user, "id=?", id).Error; err != nil {
+		return "failed", err
+	}
+	new_arr := make([]string, (len(user.FollowedUser) - 1))
+	k := 0
+	for i := 0; i < (len(user.FollowedUser) - 1); {
+		if user.FollowedUser[i] != unfollow {
+			new_arr[i] = user.FollowedUser[k]
+			k++
+			i++
+		} else {
+			k++
+		}
+	}
+	user.FollowedUser = new_arr
+	if err := r.DB.Save(user).Error; err != nil {
+		return "failed", err
+	}
+	return "success", nil
 }
 
 // Users is the resolver for the Users field.
@@ -142,3 +199,13 @@ func (r *Resolver) User() generated.UserResolver { return &userResolver{r} }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type userResolver struct{ *Resolver }
+
+// !!! WARNING !!!
+// The code below was going to be deleted when updating resolvers. It has been copied here so you have
+// one last chance to move it out of harms way if you want. There are two reasons this happens:
+//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
+//    it when you're done.
+//  - You have helper methods in this file. Move them out to keep these resolver files clean.
+func (r *userResolver) BannerURL(ctx context.Context, obj *model.User) (string, error) {
+	panic(fmt.Errorf("not implemented"))
+}
