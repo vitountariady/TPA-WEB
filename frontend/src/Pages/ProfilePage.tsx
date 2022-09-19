@@ -13,6 +13,8 @@ import Error404Page from './Error404Page';
 import CreateExperienceModal from '../Components/CreateExperienceModal';
 import Experience from '../Components/Experience';
 import { RefetchContext } from '../../contexts/refetcher';
+import UpdateNameModal from '../Components/UpdateNameModal';
+import Footer from '../Components/MyFooter';
 
 export default function ProfilePage() {
   const userContext = UserAuth();
@@ -25,6 +27,7 @@ export default function ProfilePage() {
   const [Unfollow] = useMutation(unfollow)
   const [EducationModal, setEducationModal] = useState(false);
   const [ExperienceModal, setExperienceModal] = useState(false);
+  const [NameModal, setNameModal] = useState(false);
   const [UserEducations, setUserEducations] = useState([])
   const [UserExperiences, setUserExperiences] = useState([])
   const [MyProfile, setMyProfile] = useState(false)
@@ -81,6 +84,10 @@ export default function ProfilePage() {
     setExperienceModal(!ExperienceModal)
   }
 
+  const toggleNameModal = () =>{
+    setNameModal(!NameModal)
+  }
+
   useEffect(() => {
     if(EducationModal === true||ExperienceModal===true){
         document.body.style.overflow="hidden";
@@ -128,22 +135,29 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className='beige-bg fullscreen center-col'>
+    <>
+ 
+    <div className='beige-bg fullscreen center-col page'>
         {EducationModal === true && (
           <CreateEducationModal refetch={education.refetch} toggle={toggleCreateEducation}></CreateEducationModal>
           )}
         {ExperienceModal === true && (
           <CreateExperienceModal refetch={experience.refetch} toggle={toggleCreateExperience}></CreateExperienceModal>
           )}
+        {NameModal === true && (
+          <UpdateNameModal refetch={user.refetch} toggle={toggleNameModal}></UpdateNameModal>
+          )}
         <Navbar></Navbar>
         <div className='main-profile white-bg'>
             <div className='w-full flex-col white-bg mb-20' style={{backgroundImage: "url("+ User.banner_url+")",  backgroundSize:"100% 100%", backgroundRepeat:"no-repeat", borderRadius:"15px 15px 0 0"}}>
               <div className='w-full flex-row'>
-                <label htmlFor="banner" className='w-fit'>
-                  <div className='picture-btn text-bg'>
-                    <AiFillEdit className='logo'></AiFillEdit>
-                  </div>
-                </label>
+                <label htmlFor="banner" className='w-fit h-65'>
+                  {MyProfile && (
+                        <div className='picture-btn text-bg'>
+                            <AiFillEdit className='logo'></AiFillEdit>
+                        </div>
+                  )}
+                  </label>
               </div>
               <div className='w-full flex-row pv-10' >
                 <label htmlFor="file">
@@ -151,7 +165,12 @@ export default function ProfilePage() {
                 </label>
               </div>
             </div>
-            <p className='text-black m-20 ph-10 text-xl'>{User.first_name}  {User.last_name}</p>
+            <div className='w-full flex-row'>
+              <p className='text-black m-20 ph-10 text-xl'>{User.first_name}  {User.last_name}</p>
+              {MyProfile && (
+                <AiFillEdit onClick={toggleNameModal} className='icon m-20'></AiFillEdit>
+              )}
+            </div>
             {UserExperiences.map((experience:any)=>{
               if(experience.Active){
                 return(
@@ -228,5 +247,7 @@ export default function ProfilePage() {
           })}
         </div>
     </div>
+    <Footer></Footer>
+    </>
   )
 }

@@ -6,26 +6,39 @@ import { useState } from 'react';
 
 export default function RegisterPage(){
     const [registerAccount] = useMutation(Register);
-    const [Error, setError] = useState(false);
+    const [Error, setError] = useState('');
     const navigate = useNavigate();
 
     const register = () =>{
-        registerAccount(
-            {
-            variables:{
-                email: (document.getElementById("email") as HTMLInputElement).value,
-                first_name: (document.getElementById("first_name") as HTMLInputElement).value,
-                last_name: (document.getElementById("last_name") as HTMLInputElement).value,
-                password: (document.getElementById("password") as HTMLInputElement).value}
-            }
-        ).then((x)=>{
-            console.log(x);
-            setError(false);
-            navigate('/');
-        }).catch((err)=>{
-            console.log(err);
-           setError(true); 
-        });
+        const email = (document.getElementById("email") as HTMLInputElement).value
+        const first_name = (document.getElementById("first_name") as HTMLInputElement).value
+        const last_name =(document.getElementById("last_name") as HTMLInputElement).value
+        const password = (document.getElementById("password") as HTMLInputElement).value
+
+        if(email==='' || first_name==='' || last_name ==='' || password==='' ){
+            setError("All fields must be filled");
+        }else if(password.length<6){
+            setError("Password must be at least 6 characters")
+        }else{
+            setError('')
+            registerAccount(
+                {
+                variables:{
+                    email: email,
+                    first_name: first_name ,
+                    last_name: last_name,
+                    password: password
+                    }
+                }
+            ).then((x)=>{
+                console.log(x);
+                setError("");
+                navigate('/');
+            }).catch((err)=>{
+                console.log(err);
+               setError("Email already exists"); 
+            });
+        }
     }
 
     return(
@@ -41,11 +54,11 @@ export default function RegisterPage(){
                 <input id="password" type="password" className='white-bg text-input' placeholder='Password (6 or more characters)' />
                 <button onClick={register} className='blue-button text-white'>Sign Up</button>
                 <div className='w-fit flex-row mv-20'>
-                    <p className='text-black text-xs'>Already have a LinkhedIn Account?</p>
+                    <p className='text-black text-s'>Already have a LinkhedIn Account?</p>
                     <Link className='a text-s' to='/'>Sign In</Link>
                 </div> 
-                {Error ===true && (
-                    <p className='text-black'>Email Already Exists</p>
+                {Error !='' && (
+                    <p className='text-red bold text-m'>{Error}</p>
                 )} 
             </div>
         </div>

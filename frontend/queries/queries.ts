@@ -12,6 +12,12 @@ export const Login = gql`
   }
 `
 
+export const LoginWithoutPassword = gql `
+  mutation LoginWithoutPassword($email:String!){
+    LoginWithoutPassword(email:$email)
+  }
+`
+
 export const Activate = gql`
   mutation ActivateAccount ($id:ID!){
   ActivateAccount(id:$id)
@@ -118,6 +124,23 @@ export const getUserByID = gql`
   }
 `
 
+export const getUserByEmail = gql`
+  query getUserByEmail ($email:String!){
+    getUserByEmail(email:$email){
+      id,
+      email,
+      first_name,
+      last_name,
+      password,
+      activated,
+      profile_picture_url,
+      followed_user,
+      connect_request,
+      connected_user
+    }
+  }
+`
+
 export const createExperience = gql`
   mutation CreateExperience($UserID:String!, $Title:String!, $EmploymentType:String!, $CompanyName:String!, $Location:String!, $Active:Boolean!, $StartYear:String!, $EndYear:String!, $Industry:String!, $Description:String!){
     createExperience(input:{
@@ -203,5 +226,11 @@ export const follow = gql `
 export const unfollow = gql `
   mutation unfollow($id:String!, $unfollow:String!){
     Unfollow(id:$id, unfollow:$unfollow)
+  }
+`
+
+export const UpdateName = gql `
+  mutation updateName($id:String!, $newFirstName:String!, $newLastName:String!){
+    UpdateName(id:$id, newLastName:$newLastName, newFirstName:$newFirstName)
   }
 `

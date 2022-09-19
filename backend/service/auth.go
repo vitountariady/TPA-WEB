@@ -21,6 +21,19 @@ func UploadProfilePicture(ctx context.Context, id string, newProfilePicture stri
 	return "Profile Picture Update successful", nil
 }
 
+func UpdateName(ctx context.Context, id string, newFirstName string, newLastName string) (string, error) {
+	user, err := GetUserById(ctx, id)
+	db := config.GetDB()
+	if err != nil {
+		return "Update Failed", err
+	}
+	user.FirstName = newFirstName
+	user.LastName = newLastName
+	db.Save(&user)
+	return "User Updated Successfully", nil
+
+}
+
 func UploadBanner(ctx context.Context, id string, newBanner string) (string, error) {
 	user, err := GetUserById(ctx, id)
 	db := config.GetDB()
@@ -91,6 +104,31 @@ func UserLogin(ctx context.Context, email string, password string) (interface{},
 	if err := tools.ComparePassword(getUser.Password, password); err != nil {
 		return nil, err
 	}
+	token, err := JwtGenerate(ctx, getUser.ID)
+	if err != nil {
+		return nil, err
+	}
+	return map[string]interface{}{
+		"token": token,
+		"user":  getUser,
+	}, nil
+}
+
+func UserLoginWithoutPassword(ctx context.Context, email string) (interface{}, error) {
+	getUser, err := GetUserByEmail(ctx, email)
+	if err != nil {
+		if err == gorm.ErrRecordNotFound {
+			return nil, &gqlerror.Error{
+				Message: "Email Not Found",
+			}
+		}
+		return nil, err
+	}
+
+	if !getUser.Activated {
+		return nil, nil
+	}
+
 	token, err := JwtGenerate(ctx, getUser.ID)
 	if err != nil {
 		return nil, err

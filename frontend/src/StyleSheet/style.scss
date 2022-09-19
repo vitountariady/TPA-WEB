@@ -12,6 +12,11 @@ $grey-dark: rgb(120, 100, 100);
 $grey-light: #ededed;
 $beige: #f3f2ef;
 
+.page{
+    min-height: 100vh;
+    padding-bottom: 60px ;
+}
+
 //text
 .bold{
     font-weight: bold;
@@ -45,6 +50,9 @@ $beige: #f3f2ef;
 }
 .text-blue{
     color: $blue;
+}
+.text-red{
+    color: $red;
 }
 
 p{
@@ -231,7 +239,7 @@ p{
 
 .logo{
     scale: 50%;
-    margin:10px;
+    margin:6px;
     padding: 0px;
 }
 
@@ -246,6 +254,16 @@ p{
     flex-direction: row;
     align-items: center;
     justify-content: center;
+}
+
+.footer{
+    min-height: 105px;
+    // box-shadow: rgba(0, 0, 0, 0.25) 0px 5px 15px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    bottom: 0%;
 }
 
 .form{
@@ -374,6 +392,10 @@ p{
 //Height
 .h-screen{
     min-height: 100vh;
+}
+
+.h-65{
+    min-height: 65px;
 }
 
 //spacing

@@ -23,11 +23,13 @@ type User{
 type Query{
   Users: [User!]!
   getUser(id:ID!): User!
+  getUserByEmail(email:String!): User!
   testMiddleware: String! @auth
 }
 
 type Mutation{
   Login(email: String!, password:String!): Any!
+  LoginWithoutPassword(email:String!): Any!
   Register(input:newUser!):Any!
   ActivateAccount(id:ID!):Any!
   ResetPassword(id: String!, newPassword:String!):String!
@@ -38,6 +40,7 @@ type Mutation{
   IgnoreConnect(id:String!, senderID:String!):String!
   Follow(id:String!, follow:String!):String!
   Unfollow(id:String!, unfollow:String!):String!
+  UpdateName(newFirstName:String!, newLastName:String!, id:String!):String!
 }
 
 input newUser{

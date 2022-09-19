@@ -17,6 +17,11 @@ func (r *mutationResolver) Login(ctx context.Context, email string, password str
 	return service.UserLogin(ctx, email, password)
 }
 
+// LoginWithoutPassword is the resolver for the LoginWithoutPassword field.
+func (r *mutationResolver) LoginWithoutPassword(ctx context.Context, email string) (interface{}, error) {
+	return service.UserLoginWithoutPassword(ctx, email)
+}
+
 // Register is the resolver for the Register field.
 func (r *mutationResolver) Register(ctx context.Context, input model.NewUser) (interface{}, error) {
 	return service.RegisterUser(ctx, input)
@@ -156,6 +161,11 @@ func (r *mutationResolver) Unfollow(ctx context.Context, id string, unfollow str
 	return "success", nil
 }
 
+// UpdateName is the resolver for the UpdateName field.
+func (r *mutationResolver) UpdateName(ctx context.Context, newFirstName string, newLastName string, id string) (string, error) {
+	return service.UpdateName(ctx, id, newFirstName, newLastName)
+}
+
 // Users is the resolver for the Users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	panic(fmt.Errorf("not implemented"))
@@ -165,6 +175,11 @@ func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 func (r *queryResolver) GetUser(ctx context.Context, id string) (*model.User, error) {
 	x, err := service.GetUserById(ctx, id)
 	return x, err
+}
+
+// GetUserByEmail is the resolver for the getUserByEmail field.
+func (r *queryResolver) GetUserByEmail(ctx context.Context, email string) (*model.User, error) {
+	return service.GetUserByEmail(ctx, email)
 }
 
 // TestMiddleware is the resolver for the testMiddleware field.
@@ -199,13 +214,3 @@ func (r *Resolver) User() generated.UserResolver { return &userResolver{r} }
 type mutationResolver struct{ *Resolver }
 type queryResolver struct{ *Resolver }
 type userResolver struct{ *Resolver }
-
-// !!! WARNING !!!
-// The code below was going to be deleted when updating resolvers. It has been copied here so you have
-// one last chance to move it out of harms way if you want. There are two reasons this happens:
-//  - When renaming or deleting a resolver the old code will be put in here. You can safely delete
-//    it when you're done.
-//  - You have helper methods in this file. Move them out to keep these resolver files clean.
-func (r *userResolver) BannerURL(ctx context.Context, obj *model.User) (string, error) {
-	panic(fmt.Errorf("not implemented"))
-}
