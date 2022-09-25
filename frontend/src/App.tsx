@@ -18,6 +18,7 @@ import { ApolloClient, ApolloLink, ApolloProvider, createHttpLink, InMemoryCache
 import { FaYoutubeSquare } from 'react-icons/fa'
 import MyNetworkPage from './Pages/MyNetworkPage'
 import MyNetwork from './Pages/MyNetworkPage'
+import JobsPage from './Pages/JobsPage'
 
 const Protected = () =>{
   return(
@@ -75,6 +76,7 @@ function App() {
           <Route element={<Protected/>}>
             <Route path="/mynetwork" element={<MyNetwork></MyNetwork>}></Route>
             <Route path="/home" element={<Homepage></Homepage>}></Route>
+            <Route path="/jobs" element={<JobsPage></JobsPage>}></Route>
             <Route path="/profile/:id" element={<ProfilePage></ProfilePage>}></Route>
           </Route>
           <Route path="*" element={<Error404Page></Error404Page>}></Route>

@@ -88,7 +88,7 @@ export default function LoginPage(){
                 <input id='email' type="email" className='white-bg text-input' placeholder='Email or Phone' />           
                 <input id='password' type="password" className='white-bg text-input' placeholder='Password' />
                 <button onClick={login} className='blue-button text-white'>Sign In</button>  
-                <div id='google-button'></div>
+                <div id='google-button' className='mv-20'></div>
                 <div className='w-fit flex-row mv-20'>
                     <p className='text-black '>Forgot Password?</p>
                     <Link className='a' to='/forgotPassword'>Reset Password</Link>

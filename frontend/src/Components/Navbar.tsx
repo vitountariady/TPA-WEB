@@ -26,8 +26,9 @@ export default function Navbar() {
 
   return (
     <div className='white-bg w-screen navbar'>
-      <BsLinkedin className='navbar-logo'></BsLinkedin>
-      {/* <img src="../../assets/AppIcon.png" alt="" className='logo' /> */}
+      <NavLink className="flex-row" to={'/home'}>
+        <BsLinkedin className='navbar-logo'></BsLinkedin>
+      </NavLink>
       <input type="text" className='searchbar white-bg' placeholder='Search' />
       <div className='navbar-menu-container'>
         <NavLink to="/home" className= {handleActivePage}>

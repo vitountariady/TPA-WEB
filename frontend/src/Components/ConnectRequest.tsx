@@ -1,10 +1,13 @@
 import { useMutation, useQuery } from '@apollo/client'
 import React, { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { UserAuth } from '../../contexts/authContext'
 import { RefetchContext } from '../../contexts/refetcher'
 import { acceptConnect, getUserByID, getUserExperience } from '../../queries/queries'
 
 export default function ConnectRequest(parameter:any) {
+    const navigate = useNavigate()
+
     const [UserExperiences, setUserExperiences] = useState([])
     const [User, setUser] = useState({
         id:"",
@@ -41,15 +44,15 @@ export default function ConnectRequest(parameter:any) {
 
     return (
         <div className='w-full border-sering-pake mv-20 flex-row space-between'>
-            <img className='profile-picture-small p-10' src={User.profile_picture_url} alt=""/>
+            <img onClick={()=>{navigate(`/profile/${User.id}`)}} className='profile-picture-small p-10' src={User.profile_picture_url} alt=""/>
             <div className='w-80 space-between flex-row'>
                 <div className='flex-col'>
-                    <p className='text-black bold text-m'>{User.first_name}</p>
+                    <p className='text-black bold text-m text-center'>{User.first_name}</p>
                     {UserExperiences.map((experience:any)=>{
                         if(experience.Active){
                             console.log(experience);
                             return(
-                                <p key={experience.ID} className='text-black text-s'>{experience.Description} at {experience.CompanyName}</p>
+                                <p key={experience.ID} className='text-center text-black text-s'>{experience.Description} at {experience.CompanyName}</p>
                             )
                         }
                     })}

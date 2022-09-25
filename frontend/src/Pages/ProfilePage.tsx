@@ -72,7 +72,6 @@ export default function ProfilePage() {
     if(!user.loading && !user.error){
       setError(false);
       setUser(user.data.getUser)
-      console.log(user.data.getUser)
     }
   },[user.loading,user.data])
 
@@ -199,12 +198,12 @@ export default function ProfilePage() {
 
               {(!MyProfile && !userContext.user.followed_user.includes(User.id)) && (
                 <div>
-                  <button onClick={()=>{Follow({variables:{id: userContext.user.id, follow: User.id}}).then(()=>{refetchContext.refetchUser()})}} className='white-button-smaller text-white mh-10'>Follow</button>
+                  <button onClick={()=>{Follow({variables:{id: userContext.user.id, follow: User.id}}).then(()=>{refetchContext.refetchUser()})}} className='blue-button-smaller text-white mh-10'>Follow</button>
                 </div>
               )}
               {(!MyProfile && userContext.user.followed_user.includes(User.id)) && (
                 <div>
-                  <button onClick={()=>{Unfollow({variables:{id: userContext.user.id, unfollow:User.id}}).then(()=>{refetchContext.refetchUser()})}} className='blue-button-smaller text-white mh-10'>Followed</button>
+                  <button onClick={()=>{Unfollow({variables:{id: userContext.user.id, unfollow:User.id}}).then(()=>{refetchContext.refetchUser()})}} className='white-button-smaller text-white mh-10'>Followed</button>
                 </div>
               )}
             </div>

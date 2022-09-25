@@ -15,9 +15,9 @@ export default function MyNetwork() {
     }, [])
     
     return (
-        <div className='white-bg fullscreen center-col'>
+        <div className='beige-bg fullscreen center-col'>
             <Navbar></Navbar>
-            <div className='main-container'>
+            <div className='flex-col main-container white-bg'>
                 <p className='text-black text-l bold mh-10'>Invitations</p>
                 {userContext.user.connect_request.length==0 && (
                     <p className='text-black text-s w-full mv-20'>Empty</p>

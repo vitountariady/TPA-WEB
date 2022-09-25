@@ -1,0 +1,27 @@
+scalar time
+type Post{
+    id: ID!
+    text: String!
+    photoURL: String!
+    videoURL: String!
+    posterID: String!
+    timestamp: time!
+    likes: [String!]!
+}
+
+extend type Mutation{
+    CreatePost(input:NewPost!):String!
+    LikePost(id:String!,UserID: String!): String!
+    UnlikePost(id:String!,UserID: String!): String!
+}
+
+extend type Query{
+    GetPosts(id:String!, limit:Int!, offset:Int!):[Post!]!
+}
+
+input NewPost{
+    text:String!
+    photoURL: String!
+    videoURL: String!
+    posterID: String!
+}

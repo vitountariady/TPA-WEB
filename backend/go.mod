@@ -9,6 +9,7 @@ require (
 	github.com/gorilla/mux v1.8.0
 	github.com/joho/godotenv v1.4.0
 	github.com/lib/pq v1.10.6
+	github.com/samber/lo v1.28.2
 	github.com/vektah/gqlparser/v2 v2.4.6
 	golang.org/x/crypto v0.0.0-20220722155217-630584e8d5aa
 	gopkg.in/gomail.v2 v2.0.0-20160411212932-81ebce5c23df
@@ -35,6 +36,7 @@ require (
 	github.com/russross/blackfriday/v2 v2.1.0 // indirect
 	github.com/urfave/cli/v2 v2.8.1 // indirect
 	github.com/xrash/smetrics v0.0.0-20201216005158-039620a65673 // indirect
+	golang.org/x/exp v0.0.0-20220303212507-bbda1eaf7a17 // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220106191415-9b9b3d81d5e3 // indirect
 	golang.org/x/sys v0.0.0-20211019181941-9d821ace8654 // indirect
 	golang.org/x/text v0.3.7 // indirect

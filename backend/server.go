@@ -39,11 +39,16 @@ func main() {
 	}
 
 	//Auto Migrations
+	//===============================
 	db := config.GetDB()
 	db.AutoMigrate(&model.User{})
 	db.AutoMigrate(&model.Link{})
 	db.AutoMigrate(&model.Education{})
 	db.AutoMigrate(&model.Experience{})
+	db.AutoMigrate(&model.Job{})
+	db.AutoMigrate(&model.Post{})
+	db.AutoMigrate(&model.Comment{})
+	//===============================
 
 	c := generated.Config{Resolvers: &graph.Resolver{
 		DB: db,

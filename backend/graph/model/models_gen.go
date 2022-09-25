@@ -2,6 +2,20 @@
 
 package model
 
+type NewComment struct {
+	ReplyTo string `json:"replyTo"`
+	UserID  string `json:"userID"`
+	Text    string `json:"text"`
+	PostID  string `json:"postID"`
+}
+
+type NewPost struct {
+	Text     string `json:"text"`
+	PhotoURL string `json:"photoURL"`
+	VideoURL string `json:"videoURL"`
+	PosterID string `json:"posterID"`
+}
+
 type NewEducation struct {
 	UserID       string  `json:"UserID"`
 	School       string  `json:"School"`
@@ -25,6 +39,12 @@ type NewExperience struct {
 	EndYear        string `json:"EndYear"`
 	Industry       string `json:"Industry"`
 	Description    string `json:"Description"`
+}
+
+type NewJob struct {
+	Position string `json:"position"`
+	Company  string `json:"company"`
+	Location string `json:"location"`
 }
 
 type NewUser struct {

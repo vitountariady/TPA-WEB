@@ -234,3 +234,57 @@ export const UpdateName = gql `
     UpdateName(id:$id, newLastName:$newLastName, newFirstName:$newFirstName)
   }
 `
+
+export const addJob = gql`
+  mutation addJob($position:String!, $company:String!, $location:String!){
+    addJob(input:{position:$position, company:$company, location:$location})
+  }
+`
+
+export const getJobs = gql`
+  query getJobs{
+  getAllJobs{
+      id,
+      position,
+      company,
+      location,
+    }
+  }
+`
+
+export const createPost = gql`
+  mutation createPost($text:String!, $photoURL:String!, $videoURL:String!, $posterID:String!){
+  CreatePost(input:{
+    text:$text,
+    photoURL:$photoURL,
+    videoURL:$videoURL,
+    posterID:$posterID
+  })
+}
+`
+
+export const getPosts = gql`
+  query getPost($id:String!, $limit:Int!, $offset:Int!){
+  GetPosts(id:$id, limit:$limit, offset:$offset){
+    id
+    text,
+    photoURL,
+    videoURL,
+    posterID,
+    timestamp,
+    likes,
+  }
+}
+`
+
+export const likePost = gql`
+  mutation LikePost($id:String!, $UserID:String!){
+    LikePost(id: $id, UserID: $UserID)
+  }
+`
+
+export const unlikePost = gql`
+  mutation UnlikePost($id:String!, $UserID:String!){
+    UnlikePost(id: $id, UserID: $UserID)
+  }
+`
