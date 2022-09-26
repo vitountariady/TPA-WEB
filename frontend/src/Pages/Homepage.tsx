@@ -25,7 +25,7 @@ export default function Homepage() {
   const {loading, error, data, refetch, fetchMore} = useQuery(getPosts, {
     variables:{
       id: userContext.user.id,
-      limit: 2,
+      limit: 1,
       offset: 0
     }
   })
@@ -42,6 +42,7 @@ export default function Homepage() {
       fetchMore({
         variables:{offset: Posts.length}
       }).then((x)=>{
+        console.log(x)
         setPosts(Posts.concat(x.data.GetPosts));
       })
     }
@@ -61,7 +62,7 @@ export default function Homepage() {
         </div>
         
         {Posts.length>0 && (
-        <div className='main-container white-bg center-col mb-20'>
+        <div className='w-630 mb-30 center-col'>
           {(!loading && !error) && (
             Posts.map((post:any)=>{
               return(

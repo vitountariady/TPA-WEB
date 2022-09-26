@@ -18,6 +18,7 @@ input NewComment{
 extend type Query{
     getComments(postID:String!, limit:Int!, offset:Int!):[Comment!]!
     getCommentByID(id:String!):Comment!
+    loadReplies(commentID:String!, limit:Int!, offset:Int!):[Comment!]!
 }
 
 extend type Mutation{

@@ -288,3 +288,51 @@ export const unlikePost = gql`
     UnlikePost(id: $id, UserID: $UserID)
   }
 `
+
+export const addComment = gql`
+  mutation AddComment ($text:String!, $replyTo:String!,$userID:String!, $postID:String!){
+    addComment(input:{text:$text, replyTo:$replyTo, userID:$userID, postID:$postID})
+  }
+`
+
+export  const getComments = gql`
+query getComments ($postID:String!, $limit:Int!, $offset:Int!){
+    getComments(postID:$postID, limit:$limit, offset:$offset){
+      id,
+      text,
+      replyTo,
+      likes,
+      userID,
+      postID,
+      timestamp
+    }
+  }
+`
+
+export const getCommentByID = gql`
+  query getCommentByID($id:String!){
+    getCommentByID(id:$id){
+      id,
+      text,
+      replyTo,
+      likes,
+      userID,
+      postID,
+      timestamp
+    }
+  }
+`
+
+export const loadReplies = gql`
+  query getReplies ($commentID:String!, $limit:Int!, $offset:Int!){
+    loadReplies(commentID:$commentID, limit:$limit, offset:$offset){
+      id,
+      text,
+      replyTo,
+      likes,
+      userID,
+      postID,
+      timestamp
+    }
+  }
+`

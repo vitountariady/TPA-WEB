@@ -5,7 +5,6 @@ package graph
 
 import (
 	"context"
-	"fmt"
 	"time"
 
 	"github.com/google/uuid"
@@ -13,9 +12,14 @@ import (
 	"github.com/vitountariady/TPA-WEB/graph/model"
 )
 
+// Likes is the resolver for the likes field.
+func (r *commentResolver) Likes(ctx context.Context, obj *model.Comment) ([]string, error) {
+	return obj.Likes, nil
+}
+
 // Timestamp is the resolver for the timestamp field.
 func (r *commentResolver) Timestamp(ctx context.Context, obj *model.Comment) (string, error) {
-	panic(fmt.Errorf("not implemented"))
+	return obj.Timestamp.String(), nil
 }
 
 // AddComment is the resolver for the addComment field.
@@ -40,13 +44,33 @@ func (r *mutationResolver) AddComment(ctx context.Context, input model.NewCommen
 
 // GetComments is the resolver for the getComments field.
 func (r *queryResolver) GetComments(ctx context.Context, postID string, limit int, offset int) ([]*model.Comment, error) {
-// 	// var comments []*model.Comment
-// 	// err:= r.DB.Model(comments).Limit(limit).Offset(offset).Order("timestamp DESC").Find(&comments, "")
-// }
+	var comments []*model.Comment
+	err := r.DB.Model(comments).Limit(limit).Offset(offset).Order("timestamp DESC").Find(&comments, "post_id = ? and reply_to='' ", postID).Error
+	if err != nil {
+		return nil, err
+	}
+	return comments, nil
+}
 
 // GetCommentByID is the resolver for the getCommentByID field.
 func (r *queryResolver) GetCommentByID(ctx context.Context, id string) (*model.Comment, error) {
-	panic(fmt.Errorf("not implemented"))
+	var comment *model.Comment
+	err := r.DB.First(&comment, "id = ?", id).Error
+	if err != nil {
+		return nil, err
+	} else {
+		return comment, nil
+	}
+}
+
+// LoadReplies is the resolver for the loadReplies field.
+func (r *queryResolver) LoadReplies(ctx context.Context, commentID string, limit int, offset int) ([]*model.Comment, error) {
+	var comments []*model.Comment
+	err := r.DB.Model(comments).Limit(limit).Offset(offset).Order("timestamp DESC").Find(&comments, "reply_to = ?", commentID).Error
+	if err != nil {
+		return nil, err
+	}
+	return comments, nil
 }
 
 // Comment returns generated.CommentResolver implementation.
