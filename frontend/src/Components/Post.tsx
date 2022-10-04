@@ -42,6 +42,9 @@ export default function Post (parameter:any){
 
     useEffect(() => {
         if(!comments.loading && !comments.error){
+            if(comments.data.getComments.length<5){
+                setThereAreMore(false)
+            }
             setComments(comments.data.getComments);
         }
       }, [comments.loading, comments.error, comments.data])
@@ -50,6 +53,7 @@ export default function Post (parameter:any){
         comments.fetchMore({
             variables:{offset:Comments.length}
         }).then((x)=>{
+            console.log(x.data.getComments.length)
             if(x.data.getComments.length<5){
                 setThereAreMore(false)
             }
@@ -76,7 +80,7 @@ export default function Post (parameter:any){
     ]
 
     return(
-        <div className="post border-sering-pake white-bg center-col mv-10">
+        <div className="post white-bg center-col mv-10">
              {(!User.loading && !User.error) && (
                 <>
                     <div className="w-full flex-row">

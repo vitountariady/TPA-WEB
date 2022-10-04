@@ -27,7 +27,9 @@ export default function RegisterPage(){
                     email: email,
                     first_name: first_name ,
                     last_name: last_name,
-                    password: password
+                    password: password,
+                    profile_picture_url: "https://firebasestorage.googleapis.com/v0/b/linkhedin-vt.appspot.com/o/profilePictures%2Fdefault.jpg?alt=media&token=10a15675-4c98-454a-8bdd-bc5914611547",
+                    activated: false,
                     }
                 }
             ).then((x)=>{

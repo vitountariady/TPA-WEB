@@ -48,8 +48,10 @@ type NewJob struct {
 }
 
 type NewUser struct {
-	Email     string `json:"email"`
-	FirstName string `json:"first_name"`
-	LastName  string `json:"last_name"`
-	Password  string `json:"password"`
+	Email             string `json:"email"`
+	FirstName         string `json:"first_name"`
+	LastName          string `json:"last_name"`
+	Password          string `json:"password"`
+	ProfilePictureURL string `json:"profile_picture_url"`
+	Activated         bool   `json:"activated"`
 }

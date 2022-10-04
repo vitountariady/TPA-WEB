@@ -53,7 +53,7 @@ func ResetPassword(ctx context.Context, id string, newPassword string) (string, 
 		return "", err
 	}
 	if err := db.Delete(link, "user_id=?", id).Error; err != nil {
-		panic(err)
+		return "", err
 	}
 	user.Password = tools.HashPassword(newPassword)
 	db.Save(&user)
@@ -73,14 +73,19 @@ func RegisterUser(ctx context.Context, input model.NewUser) (interface{}, error)
 		return nil, err
 	}
 
-	link, err := ActivationLinkCreate(ctx, createdUser.ID)
-	if err != nil {
-		return nil, err
+	if !createdUser.Activated {
+		link, err := ActivationLinkCreate(ctx, createdUser.ID)
+		if err != nil {
+			return nil, err
+		}
+
+		// fmt.Print(link)
+
+		sendEmail(createdUser.Email, link)
+		return map[string]interface{}{
+			"id": createdUser.ID,
+		}, nil
 	}
-
-	// fmt.Print(link)
-
-	sendEmail(createdUser.Email, link)
 	return map[string]interface{}{
 		"id": createdUser.ID,
 	}, nil

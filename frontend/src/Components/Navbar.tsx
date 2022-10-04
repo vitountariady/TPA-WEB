@@ -22,6 +22,7 @@ export default function Navbar() {
 
   const logout = () =>{
     userContext.setUser({});
+    userContext.setToken("");
   }
 
   return (

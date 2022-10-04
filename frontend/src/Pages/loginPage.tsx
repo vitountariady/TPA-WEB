@@ -1,12 +1,13 @@
 import { Link, Navigate, useNavigate } from 'react-router-dom'
 import '../StyleSheet/style.scss'
-import { getUserByEmail, Login, LoginWithoutPassword } from '../../queries/queries'
+import { getUserByEmail, Login, LoginWithoutPassword, Register } from '../../queries/queries'
 import { useLazyQuery, useMutation, useQuery } from '@apollo/client';
 import { UserAuth } from '../../contexts/authContext';
 import { lazy, useEffect, useState } from 'react';
 import jwtDecode from 'jwt-decode';
 
 export default function LoginPage(){
+    const [registerAccount] = useMutation(Register);
     const userContext = UserAuth();
     const [loginUser] = useMutation(Login);
     const [loginWithoutPassword] = useMutation(LoginWithoutPassword);
@@ -34,6 +35,7 @@ export default function LoginPage(){
         type User ={
             given_name: String,
             family_name: String,
+            picture: String,
             email: String,
             token: String
         }
@@ -47,7 +49,28 @@ export default function LoginPage(){
                 userContext.setToken(x.data.LoginWithoutPassword.token)
                 navigate('/home')
             }).catch((err)=>{
-                console.log(err)
+                registerAccount(
+                    {
+                    variables:{
+                        email: user.email,
+                        first_name: user.given_name ,
+                        last_name: user.family_name,
+                        password: "google_account_"+user.email,
+                        profile_picture_url: user.picture,
+                        activated: true,
+                        }
+                    }
+                ).then((x)=>{
+                    loginWithoutPassword({variables:{email: user.email}}).then((x)=>{
+                        console.log(x)
+                        userContext.setUser(x.data.LoginWithoutPassword.user)
+                        userContext.setToken(x.data.LoginWithoutPassword.token)
+                        navigate('/home')
+                    })
+                }).catch((err)=>{
+                    console.log(err);
+                    setError("Register Error"); 
+                });
                 setError('Please input valid credentials')
             })
         })

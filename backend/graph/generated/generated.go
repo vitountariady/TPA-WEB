@@ -195,7 +195,7 @@ type MutationResolver interface {
 	DeleteExperience(ctx context.Context, id string) (string, error)
 	AddJob(ctx context.Context, input model.NewJob) (string, error)
 	CreateLink(ctx context.Context, userID string) (*model.Link, error)
-	GenerateResetPassLink(ctx context.Context, userEmail string) (interface{}, error)
+	GenerateResetPassLink(ctx context.Context, userEmail string) (string, error)
 	CreatePost(ctx context.Context, input model.NewPost) (string, error)
 	LikePost(ctx context.Context, id string, userID string) (string, error)
 	UnlikePost(ctx context.Context, id string, userID string) (string, error)
@@ -1255,7 +1255,7 @@ extend type Query{
 
 extend type Mutation{
     createLink(userID: String!): Link!
-    generateResetPassLink(userEmail:String!):Any!
+    generateResetPassLink(userEmail:String!):String!
 }`, BuiltIn: false},
 	{Name: "../User.graphqls", Input: `# GraphQL schema example
 #
@@ -1307,6 +1307,8 @@ input newUser{
   first_name:String!
   last_name:String!
   password:String!
+  profile_picture_url: String!
+  activated: Boolean!
 }`, BuiltIn: false},
 	{Name: "../post.graphqls", Input: `scalar time
 type Post{
@@ -4967,9 +4969,9 @@ func (ec *executionContext) _Mutation_generateResetPassLink(ctx context.Context,
 		}
 		return graphql.Null
 	}
-	res := resTmp.(interface{})
+	res := resTmp.(string)
 	fc.Result = res
-	return ec.marshalNAny2interface(ctx, field.Selections, res)
+	return ec.marshalNString2string(ctx, field.Selections, res)
 }
 
 func (ec *executionContext) fieldContext_Mutation_generateResetPassLink(ctx context.Context, field graphql.CollectedField) (fc *graphql.FieldContext, err error) {
@@ -4979,7 +4981,7 @@ func (ec *executionContext) fieldContext_Mutation_generateResetPassLink(ctx cont
 		IsMethod:   true,
 		IsResolver: true,
 		Child: func(ctx context.Context, field graphql.CollectedField) (*graphql.FieldContext, error) {
-			return nil, errors.New("field of type Any does not have child fields")
+			return nil, errors.New("field of type String does not have child fields")
 		},
 	}
 	defer func() {
@@ -9173,7 +9175,7 @@ func (ec *executionContext) unmarshalInputnewUser(ctx context.Context, obj inter
 		asMap[k] = v
 	}
 
-	fieldsInOrder := [...]string{"email", "first_name", "last_name", "password"}
+	fieldsInOrder := [...]string{"email", "first_name", "last_name", "password", "profile_picture_url", "activated"}
 	for _, k := range fieldsInOrder {
 		v, ok := asMap[k]
 		if !ok {
@@ -9209,6 +9211,22 @@ func (ec *executionContext) unmarshalInputnewUser(ctx context.Context, obj inter
 
 			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("password"))
 			it.Password, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "profile_picture_url":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("profile_picture_url"))
+			it.ProfilePictureURL, err = ec.unmarshalNString2string(ctx, v)
+			if err != nil {
+				return it, err
+			}
+		case "activated":
+			var err error
+
+			ctx := graphql.WithPathContext(ctx, graphql.NewPathWithField("activated"))
+			it.Activated, err = ec.unmarshalNBoolean2bool(ctx, v)
 			if err != nil {
 				return it, err
 			}

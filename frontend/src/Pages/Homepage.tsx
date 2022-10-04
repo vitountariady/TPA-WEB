@@ -25,7 +25,7 @@ export default function Homepage() {
   const {loading, error, data, refetch, fetchMore} = useQuery(getPosts, {
     variables:{
       id: userContext.user.id,
-      limit: 1,
+      limit: 2,
       offset: 0
     }
   })

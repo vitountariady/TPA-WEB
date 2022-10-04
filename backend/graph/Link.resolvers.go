@@ -18,9 +18,8 @@ func (r *mutationResolver) CreateLink(ctx context.Context, userID string) (*mode
 }
 
 // GenerateResetPassLink is the resolver for the generateResetPassLink field.
-func (r *mutationResolver) GenerateResetPassLink(ctx context.Context, userEmail string) (interface{}, error) {
-	service.ResetPasswordLinkCreate(ctx, userEmail)
-	return map[string]interface{}{}, nil
+func (r *mutationResolver) GenerateResetPassLink(ctx context.Context, userEmail string) (string, error) {
+	return service.ResetPasswordLinkCreate(ctx, userEmail)
 }
 
 // GetLink is the resolver for the getLink field.

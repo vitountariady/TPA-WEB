@@ -48,4 +48,6 @@ input newUser{
   first_name:String!
   last_name:String!
   password:String!
+  profile_picture_url: String!
+  activated: Boolean!
 }

@@ -13,7 +13,7 @@ export default function ResetPasswordPage() {
     }
 })
   const reset = () =>{
-    if(!loading){
+    if(!loading && !error){
         const userid= data.getLink.userID
         const password =  (document.getElementById("password") as HTMLInputElement).value
         const confirmpassword =  (document.getElementById("confirmpassword") as HTMLInputElement).value
