@@ -51,7 +51,7 @@ export default function Navbar() {
           <FaSuitcase className='navbar-icon'></FaSuitcase>
           <p className='item-label'>Jobs</p>
         </NavLink>
-        <NavLink to="/messaging" className= {handleActivePage}>
+        <NavLink to={"/message/"} className= {handleActivePage}>
           <AiFillMessage className='navbar-icon'></AiFillMessage>
           <p className='item-label'>Messaging</p>
         </NavLink>

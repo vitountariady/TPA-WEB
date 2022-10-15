@@ -20,6 +20,7 @@ import MyNetworkPage from './Pages/MyNetworkPage'
 import MyNetwork from './Pages/MyNetworkPage'
 import JobsPage from './Pages/JobsPage'
 import SearchPage from './Pages/SearchPage'
+import MessagePage from './Pages/MessagePage'
 
 const Protected = () =>{
   return(
@@ -81,6 +82,8 @@ function App() {
             <Route path="/profile/:id" element={<ProfilePage></ProfilePage>}></Route>
             <Route path="/search/:query" element={<SearchPage></SearchPage>}></Route>
             <Route path="/search/" element={<SearchPage></SearchPage>}></Route>
+            <Route path="/message/:roomid" element={<MessagePage></MessagePage>}></Route>
+            <Route path="/message" element={<MessagePage></MessagePage>}></Route>
           </Route>
           <Route path="*" element={<Error404Page></Error404Page>}></Route>
         </Routes>

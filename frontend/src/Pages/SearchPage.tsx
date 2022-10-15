@@ -1,17 +1,19 @@
-import { useQuery } from '@apollo/client'
+import { useMutation, useQuery } from '@apollo/client'
 import React, { useState, useEffect } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { SearchPosts, SearchUsers } from '../../queries/queries'
+import { UserAuth } from '../../contexts/authContext'
+import { requestConnect, SearchPosts, SearchUsers } from '../../queries/queries'
 import Navbar from '../Components/Navbar'
 import Post from '../Components/Post'
-import UsersSearchTab from '../Components/UsersSearchTab'
 
 export default function SearchPage() {
+  const userContext = UserAuth();
   const [Posts, setPosts] = useState([]);
   const [Users, setUsers] = useState([]);
   const [Loading, setLoading] = useState(true);
   const [HasMore, setHasMore] = useState(true);
   const navigate = useNavigate();
+  const [requestConnection] = useMutation(requestConnect)
   
   var searchQuery = useParams().query
   if(searchQuery === undefined){
@@ -63,10 +65,24 @@ export default function SearchPage() {
             {Users.length > 0 && (
               <>
                 {Users.map((user:any)=>{
+                if(user.id == userContext.user.id){
+                  return
+                }
                 return(
-                    <div onClick={()=>{navigate(`/profile/${user.id}`)}} className='w-80 border-sering-pake mv-10 flex-row space-around'>
-                        <img className='profile-picture-small p-10' src={user.profile_picture_url} alt=""/>
-                        <p className='text-black bold text-m text-center'>{user.first_name +" "+user.last_name}</p>
+                    <div className='w-80 border-sering-pake mv-10 flex-row space-around'>
+                        <div className='flex-row' onClick={()=>{navigate(`/profile/${user.id}`)}}>
+                          <img className='profile-picture-small p-10' src={user.profile_picture_url} alt=""/>
+                          <p className='text-black bold text-m text-center'>{user.first_name +" "+user.last_name}</p>
+                        </div>
+                        {(!user.connect_request.includes(userContext.user.id) && !user.connected_user.includes(userContext.user.id) ) && (
+                          <button onClick={()=>{requestConnection({variables:{id: userContext.user.id, recepient:user.id}}).then(()=>{users.refetch().then((x)=>{setUsers(x.data.searchUsers)})})}} className='blue-button-smaller text-white'>Connect</button>
+                        )}
+                        {user.connect_request.includes(userContext.user.id) && (
+                          <button className='grey-button-smaller text-white'>Requested</button>
+                        )}
+                        {user.connected_user.includes(userContext.user.id) && (
+                          <button className='white-button-smaller text-white'>Connected</button>
+                        )}
                     </div>
                 )
                 })}

@@ -5,7 +5,7 @@ import { BiCommentDetail } from "react-icons/bi";
 import { Mention, MentionsInput, SuggestionDataItem } from "react-mentions";
 import { useNavigate } from "react-router-dom"
 import { UserAuth } from "../../contexts/authContext";
-import { addComment, getAllTags, getUserByID, likeComment, loadReplies, unlikeComment } from "../../queries/queries"
+import { addComment, getAllTags, getConnectedUser, getUserByID, likeComment, loadReplies, unlikeComment } from "../../queries/queries"
 import CommentContentTemplate from "../CommentContent";
 
 export default function Comment (parameter:any) {
@@ -14,25 +14,43 @@ export default function Comment (parameter:any) {
     const [AddReplies, setAddReplies] = useState(false)
     const [ThereAreMore, setThereAreMore] = useState(true)
     const [CommentContent, setCommentContent] = useState("");
-    const [mentionsData, setmentionsData] = useState<SuggestionDataItem[]>([]);
     const [like] = useMutation(likeComment);
     const [unlike] = useMutation(unlikeComment);
     const [comment] = useMutation(addComment)
-    const [connecteduser] = useLazyQuery(getUserByID);
-    const [allTags] = useLazyQuery(getAllTags);
     const userContext = UserAuth();
+    const allTags = useQuery(getAllTags);
+    const connecteduser = useQuery(getConnectedUser,{variables:{id: userContext.user.id}});
     const User = useQuery(getUserByID,{variables:{UserID: parameter.comment.userID}})
     const navigate = useNavigate();
     
-    useEffect(() => {
-        userContext.user.connected_user.map((connection:any) => {
-            connecteduser({variables:{UserID: connection}}).then((e)=>{
-                let userData = e.data.getUser
-                let mentionData : SuggestionDataItem ={id: userData.id , display: "@"+userData.first_name + userData.last_name}
-                setmentionsData(mentionsData.concat(mentionData))
-            })
-        });
-    }, [userContext.user])
+    // useEffect(() => {
+    //     userContext.user.connected_user.map((connection:any) => {
+    //         connecteduser({variables:{UserID: connection}}).then((e)=>{
+    //             let userData = e.data.getUser
+    //             let mentionData : SuggestionDataItem ={id: userData.id , display: "@"+userData.first_name + userData.last_name}
+    //             setmentionsData(mentionsData.concat(mentionData))
+    //         })
+    //     });
+    // }, [userContext.user])
+
+    var mentionsData: SuggestionDataItem[] = []
+    if(!connecteduser.loading && !connecteduser.error){
+        // console.log(connecteduser.data.getConnectedUsers);
+        connecteduser.data.getConnectedUsers.map((e:any)=>{
+            let x : SuggestionDataItem = {id:e.id, display:`@${e.first_name}${e.last_name}`}
+            mentionsData.push(x)
+        })
+    }
+
+    var tagsArr:SuggestionDataItem[] = [];
+    if(!allTags.loading && !allTags.error && allTags.data!==undefined){
+        // console.log(allTags.data.getAllTags)
+        allTags.data.getAllTags.map((e:any)=>{
+            // console.log(e);
+            let x : SuggestionDataItem={id:e.id, display: e.text}
+            tagsArr.push(x)
+        })
+    }
 
     const LikeComment = () =>{
         like({variables:{
@@ -102,10 +120,10 @@ export default function Comment (parameter:any) {
             <div className="w-full flex-row mb-20">
                 <img onClick={()=>{navigate(`/profile/${User.data.getUser.id}`)}} src={User.data.getUser.profile_picture_url} className="homepage-picture" alt="" />
                 <div className="flex-col mh-30">
-                    <p className="text-black text-s bold">{User.data.getUser.first_name} {User.data.getUser.last_name}</p>
-                    <div className="commentContainer">
-                        <CommentContentTemplate texts={parameter.comment.text.split(' ')}></CommentContentTemplate>
-                    </div>
+                    <p className="text-black text-s bold mh-15">{User.data.getUser.first_name} {User.data.getUser.last_name}</p>
+                    {/* <div className="commentContainer"> */}
+                        <CommentContentTemplate font="s" texts={parameter.comment.text.split(' ')}></CommentContentTemplate>
+                    {/* </div> */}
                     {(Replies.length>0 && ShowReplies==false) && (
                         <p onClick={()=>{setShowReplies(true)}} className="text-black text-s bold">Show Replies</p>
                     )}
@@ -144,6 +162,7 @@ export default function Comment (parameter:any) {
                     {/* <input id="reply" type="text" className="chat-input" placeholder="Reply"/> */}
                     <MentionsInput value={CommentContent} onChange={(e)=>{setCommentContent(e.target.value); console.log(mentionsData)}} placeholder="Comment" className="chat-input" id="comment">
                         <Mention trigger="@" data={mentionsData}/>
+                        <Mention trigger="#" data={tagsArr}/>
                     </MentionsInput>
                     <button onClick={AddComment} className="send-button">Send</button>
                 </div>

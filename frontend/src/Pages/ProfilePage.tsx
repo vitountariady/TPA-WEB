@@ -184,7 +184,7 @@ export default function ProfilePage() {
                 <div>
                   <button onClick={()=>{requestConnection({variables:{id:userContext.user.id, recepient:User.id}}).then(()=>{user.refetch()})}} className='blue-button-smaller text-white'>Request Connection</button>
                 </div>
-              )}
+              )} 
               {(MyProfile!=true && User.connect_request.includes(userContext.user.id)) && (
                 <div>
                   <button className='grey-button-smaller text-white'>Requested</button>

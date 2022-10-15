@@ -4,16 +4,20 @@ import { storage } from '../../firebase.config'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
 import { getDataFromTree } from '@apollo/client/react/ssr'
 import { UserAuth } from '../../contexts/authContext'
-import { useMutation } from '@apollo/client'
-import { createPost } from '../../queries/queries'
+import { useMutation, useQuery } from '@apollo/client'
+import { createPost, getAllTags, getConnectedUser } from '../../queries/queries'
+import { Mention, MentionsInput, SuggestionDataItem } from 'react-mentions'
 
 
 export default function CreatePostModal(parameter:any){
     const [Photo, setPhoto] = useState('')
     const [Video, setVideo] = useState('')
     const [Error, setError] = useState('')
+    const [Tulisan, setTulisan] = useState('')
     const userContext = UserAuth();
     const [create] = useMutation(createPost)
+    const allTags = useQuery(getAllTags);
+    const connecteduser = useQuery(getConnectedUser,{variables:{id: userContext.user.id}})
 
     const uploadPhoto = async (e:any) =>{
         const photoFile = e.target.files[0]
@@ -38,7 +42,7 @@ export default function CreatePostModal(parameter:any){
     }
 
     const handleCreate = () =>{
-        const text  = (document.getElementById("tulisan") as HTMLInputElement).value
+        const text  = Tulisan
         if(text ===''){
             setError('Post description cannot be empty')
             return;
@@ -50,6 +54,25 @@ export default function CreatePostModal(parameter:any){
         })
     }
 
+    var mentionsData: SuggestionDataItem[] = []
+    if(!connecteduser.loading && !connecteduser.error){
+        // console.log(connecteduser.data.getConnectedUsers);
+        connecteduser.data.getConnectedUsers.map((e:any)=>{
+            let x : SuggestionDataItem = {id:e.id, display:`@${e.first_name}${e.last_name}`}
+            mentionsData.push(x)
+        })
+    }
+    
+    var tagsArr:SuggestionDataItem[] = [];
+    if(!allTags.loading && !allTags.error && allTags.data!==undefined){
+        // console.log(allTags.data.getAllTags)
+        allTags.data.getAllTags.map((e:any)=>{
+            // console.log(e);
+            let x : SuggestionDataItem={id:e.id, display: e.text}
+            tagsArr.push(x)
+        })
+    }
+
     return(
         <div className="modal center-all">
             <div className="small-form">
@@ -57,7 +80,11 @@ export default function CreatePostModal(parameter:any){
                     <p className='text-black text-l bold mh-20'>Create a Post</p>
                 </div>
                 <div className='w-full center-col mb-20'>
-                    <textarea id='tulisan' style={{resize:"none",width:"340px", borderRadius:"5px", height:"100px",padding:"10px"}} placeholder="What do you want to talk about"></textarea>
+                    {/* <textarea id='tulisan' style={{resize:"none",width:"340px", borderRadius:"5px", height:"100px",padding:"10px"}} placeholder="What do you want to talk about"></textarea> */}
+                    <MentionsInput style={{resize:"none",width:"340px", borderRadius:"5px", height:"100px",padding:"10px"}} value={Tulisan} onChange={(e)=>{setTulisan(e.target.value);console.log(mentionsData)}} placeholder="What do you want to talk about" className="chat-input" id="comment">
+                        <Mention trigger="@" data={mentionsData}/>
+                        <Mention trigger="#" data={tagsArr}/>
+                    </MentionsInput>
                 </div>
 
                 {(Photo!=='' || Video!=='') && (
