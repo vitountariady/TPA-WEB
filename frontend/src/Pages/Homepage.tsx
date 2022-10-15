@@ -8,7 +8,9 @@ import Post from '../Components/Post';
 export default function Homepage() {
   const userContext = UserAuth()
   const [AddPost, setAddPost] = useState(false);
+  const [Loading, setLoading] = useState(true);
   const [Posts, setPosts] = useState([]);
+  const [HasMore, setHasMore] = useState(true)
 
   const toggleAddPost = () =>{
     setAddPost(!AddPost);
@@ -25,7 +27,7 @@ export default function Homepage() {
   const {loading, error, data, refetch, fetchMore} = useQuery(getPosts, {
     variables:{
       id: userContext.user.id,
-      limit: 2,
+      limit: 3,
       offset: 0
     }
   })
@@ -33,20 +35,29 @@ export default function Homepage() {
   useEffect(() => {
     if(!loading && !error){
       setPosts(data.GetPosts);
+      setLoading(false);
     }
   }, [loading, error, data])
   
 
   window.onscroll = () =>{
     if(window.innerHeight + window.scrollY > document.body.offsetHeight){
-      fetchMore({
-        variables:{offset: Posts.length}
-      }).then((x)=>{
-        console.log(x)
-        setPosts(Posts.concat(x.data.GetPosts));
-      })
+      if(HasMore){
+        setLoading(true)
+        fetchMore({
+          variables:{offset: Posts.length}
+        }).then((x)=>{
+          if(x.data.GetPosts.length < 3){
+            setHasMore(false);
+            setLoading(false);
+          }
+          setPosts(Posts.concat(x.data.GetPosts));
+          setLoading(false);
+        })
+      }
     }
   }
+
   
   return (
     <div className='beige-bg fullscreen center-col'>
@@ -57,7 +68,7 @@ export default function Homepage() {
         <div className='main-container white-bg center-row mv-20'>
           <img src={userContext.user.profile_picture_url} className='homepage-picture mh-20'></img>
           <button onClick={toggleAddPost} className='white-button'>
-            <p className='text-s bold'>Talk to your network about your interests</p>
+            <p className='text-s bold'>Start a Post</p>
           </button>
         </div>
         
@@ -70,6 +81,9 @@ export default function Homepage() {
               )
             })
           )}
+          {(Loading) && (
+              <p className='text-blue text-m bold mh-20'>Loading...</p>
+          )}  
         </div>
         )}
     </div>

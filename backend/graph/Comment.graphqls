@@ -23,4 +23,6 @@ extend type Query{
 
 extend type Mutation{
     addComment(input:NewComment!):String!
+    likeComment(commentID: String!, userID: String!): String!
+    unlikeComment(commentID: String!, userID: String!): String!
 }

@@ -336,3 +336,78 @@ export const loadReplies = gql`
     }
   }
 `
+
+export const likeComment = gql`
+mutation likeComment($commentID:String!, $userID:String!){
+  likeComment(commentID:$commentID, userID:$userID)
+}
+`
+
+export const unlikeComment = gql`
+mutation unlikeComment($commentID:String!, $userID:String!){
+  unlikeComment(commentID:$commentID, userID:$userID)
+}
+`
+
+export const makeHashtag = gql`
+mutation AddHashtag($text:String!){
+  addHashtag(text: $text)
+}
+`
+
+export const getAllTags = gql`
+  query getAllHashtags{
+    getAllTags{
+      id,
+      text
+    }
+  }  
+`
+
+export const SearchUsers = gql`
+  query SearchUser ($query:String!){
+    searchUsers(query :$query){
+          id,
+          email,
+          first_name,
+          last_name,
+          password,
+          activated,
+          profile_picture_url,
+          followed_user,
+          connect_request,
+          connected_user
+    }
+  }
+`
+
+export const SearchPosts = gql`
+query SearchPost ($query:String!, $limit:Int!, $offset:Int!){
+  SearchPosts(query:$query, limit:$limit, offset:$offset){
+    id,
+    text,
+    photoURL,
+    videoURL,
+    posterID,
+    timestamp,
+    likes
+  }
+}
+`
+
+export const getConnectedUser = gql`
+query getConnectedUsers ($id:String!){
+  getConnectedUsers(id:$id){
+    id,
+        email,
+        first_name,
+        last_name,
+        password,
+        activated,
+        profile_picture_url,
+        followed_user,
+        connect_request,
+    	  connected_user
+  }
+}
+`

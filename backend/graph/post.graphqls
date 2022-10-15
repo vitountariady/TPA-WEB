@@ -17,6 +17,7 @@ extend type Mutation{
 
 extend type Query{
     GetPosts(id:String!, limit:Int!, offset:Int!):[Post!]!
+    SearchPosts(query:String!, limit: Int!, offset:Int!):[Post!]!
 }
 
 input NewPost{

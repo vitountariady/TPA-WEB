@@ -1,20 +1,56 @@
-import { useMutation, useQuery } from "@apollo/client"
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client"
 import { useState, useEffect } from "react"
 import { AiFillLike } from "react-icons/ai";
 import { BiCommentDetail } from "react-icons/bi";
+import { Mention, MentionsInput, SuggestionDataItem } from "react-mentions";
 import { useNavigate } from "react-router-dom"
 import { UserAuth } from "../../contexts/authContext";
-import { addComment, getUserByID, loadReplies } from "../../queries/queries"
+import { addComment, getAllTags, getUserByID, likeComment, loadReplies, unlikeComment } from "../../queries/queries"
+import CommentContentTemplate from "../CommentContent";
 
 export default function Comment (parameter:any) {
     const [Replies, setReplies] = useState([])
     const [ShowReplies, setShowReplies] = useState(false)
     const [AddReplies, setAddReplies] = useState(false)
     const [ThereAreMore, setThereAreMore] = useState(true)
+    const [CommentContent, setCommentContent] = useState("");
+    const [mentionsData, setmentionsData] = useState<SuggestionDataItem[]>([]);
+    const [like] = useMutation(likeComment);
+    const [unlike] = useMutation(unlikeComment);
     const [comment] = useMutation(addComment)
+    const [connecteduser] = useLazyQuery(getUserByID);
+    const [allTags] = useLazyQuery(getAllTags);
     const userContext = UserAuth();
     const User = useQuery(getUserByID,{variables:{UserID: parameter.comment.userID}})
     const navigate = useNavigate();
+    
+    useEffect(() => {
+        userContext.user.connected_user.map((connection:any) => {
+            connecteduser({variables:{UserID: connection}}).then((e)=>{
+                let userData = e.data.getUser
+                let mentionData : SuggestionDataItem ={id: userData.id , display: "@"+userData.first_name + userData.last_name}
+                setmentionsData(mentionsData.concat(mentionData))
+            })
+        });
+    }, [userContext.user])
+
+    const LikeComment = () =>{
+        like({variables:{
+            commentID: parameter.comment.id,
+            userID: userContext.user.id
+        }}).then(()=>{
+            parameter.refetch({limit: parameter.length})
+        })
+    }
+
+    const UnlikeComment = () =>{
+        unlike({variables:{
+            commentID: parameter.comment.id,
+            userID: userContext.user.id
+        }}).then(()=>{
+            parameter.refetch({limit: parameter.length})
+        })
+    }
 
     const replies = useQuery(loadReplies,{
         variables:{
@@ -25,7 +61,7 @@ export default function Comment (parameter:any) {
     })
 
     const AddComment = () =>{
-        const text  = (document.getElementById("reply") as HTMLInputElement).value
+        const text = CommentContent
         comment({variables:{
             text: text,
             replyTo: parameter.comment.id,
@@ -33,6 +69,7 @@ export default function Comment (parameter:any) {
             postID: parameter.post.id
         }}).then(()=>{
             replies.refetch({limit:Replies.length+1})
+            setCommentContent("")
         }).catch((err)=>{
             console.log(err)
         })
@@ -66,7 +103,9 @@ export default function Comment (parameter:any) {
                 <img onClick={()=>{navigate(`/profile/${User.data.getUser.id}`)}} src={User.data.getUser.profile_picture_url} className="homepage-picture" alt="" />
                 <div className="flex-col mh-30">
                     <p className="text-black text-s bold">{User.data.getUser.first_name} {User.data.getUser.last_name}</p>
-                    <p className="text-black text-s">{parameter.comment.text}</p>
+                    <div className="commentContainer">
+                        <CommentContentTemplate texts={parameter.comment.text.split(' ')}></CommentContentTemplate>
+                    </div>
                     {(Replies.length>0 && ShowReplies==false) && (
                         <p onClick={()=>{setShowReplies(true)}} className="text-black text-s bold">Show Replies</p>
                     )}
@@ -77,7 +116,7 @@ export default function Comment (parameter:any) {
                     <p className="text-black text-m bold mv-10">Replies</p>
                     {Replies.map((reply:any)=>{
                         return(
-                            <Comment key={reply.id} comment={reply} post={parameter.post}></Comment>
+                            <Comment refetch={replies.refetch} length= {Replies.length} key={reply.id} comment={reply} post={parameter.post}></Comment>
                         )
                     })}
                     {ThereAreMore && (
@@ -87,7 +126,12 @@ export default function Comment (parameter:any) {
             )}
             <div className="w-full flex-row">
                 <div className="mh-10 center-row">
-                    <AiFillLike className="icon-liked"/>
+                    {!parameter.comment.likes.includes(userContext.user.id)&&(
+                        <AiFillLike onClick={LikeComment} className="icon"/>
+                    )}
+                    {parameter.comment.likes.includes(userContext.user.id)&&(
+                        <AiFillLike onClick={UnlikeComment} className="icon-liked"/>
+                    )}
                     <p className="text-black text-s mh-10">{parameter.comment.likes.length}</p>
                 </div>
                 <div className="center-row mh-20">
@@ -97,7 +141,10 @@ export default function Comment (parameter:any) {
             {AddReplies && (
                 <div className="w-full flex-row mv-30 mh-10">
                     <img onClick={()=>{navigate(`/profile/${User.data.getUser.id}`)}} src={User.data.getUser.profile_picture_url} className="homepage-picture mh-10" alt="" />
-                    <input id="reply" type="text" className="chat-input" placeholder="Reply"/>
+                    {/* <input id="reply" type="text" className="chat-input" placeholder="Reply"/> */}
+                    <MentionsInput value={CommentContent} onChange={(e)=>{setCommentContent(e.target.value); console.log(mentionsData)}} placeholder="Comment" className="chat-input" id="comment">
+                        <Mention trigger="@" data={mentionsData}/>
+                    </MentionsInput>
                     <button onClick={AddComment} className="send-button">Send</button>
                 </div>
             )}

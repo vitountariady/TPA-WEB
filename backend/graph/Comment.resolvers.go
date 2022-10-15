@@ -42,6 +42,47 @@ func (r *mutationResolver) AddComment(ctx context.Context, input model.NewCommen
 	}
 }
 
+// LikeComment is the resolver for the likeComment field.
+func (r *mutationResolver) LikeComment(ctx context.Context, commentID string, userID string) (string, error) {
+	comment := new(model.Comment)
+	if err := r.DB.First(comment, "id=?", commentID).Error; err != nil {
+		return "failed", err
+	}
+	comment.Likes = append(comment.Likes, userID)
+	if err := r.DB.Save(comment).Error; err != nil {
+		return "failed", err
+	}
+	return "success", nil
+}
+
+// UnlikeComment is the resolver for the unlikeComment field.
+func (r *mutationResolver) UnlikeComment(ctx context.Context, commentID string, userID string) (string, error) {
+	comment := new(model.Comment)
+	if err := r.DB.First(comment, "id=?", commentID).Error; err != nil {
+		return "failed", err
+	}
+
+	new_arr := make([]string, (len(comment.Likes) - 1))
+
+	k := 0
+
+	for i := 0; i < (len(comment.Likes) - 1); {
+		if comment.Likes[i] != userID {
+			new_arr[i] = comment.Likes[k]
+			k++
+			i++
+		} else {
+			k++
+		}
+	}
+
+	comment.Likes = new_arr
+	if err := r.DB.Save(comment).Error; err != nil {
+		return "failed", err
+	}
+	return "success", nil
+}
+
 // GetComments is the resolver for the getComments field.
 func (r *queryResolver) GetComments(ctx context.Context, postID string, limit int, offset int) ([]*model.Comment, error) {
 	var comments []*model.Comment

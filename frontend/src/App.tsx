@@ -19,6 +19,7 @@ import { FaYoutubeSquare } from 'react-icons/fa'
 import MyNetworkPage from './Pages/MyNetworkPage'
 import MyNetwork from './Pages/MyNetworkPage'
 import JobsPage from './Pages/JobsPage'
+import SearchPage from './Pages/SearchPage'
 
 const Protected = () =>{
   return(
@@ -78,6 +79,8 @@ function App() {
             <Route path="/home" element={<Homepage></Homepage>}></Route>
             <Route path="/jobs" element={<JobsPage></JobsPage>}></Route>
             <Route path="/profile/:id" element={<ProfilePage></ProfilePage>}></Route>
+            <Route path="/search/:query" element={<SearchPage></SearchPage>}></Route>
+            <Route path="/search/" element={<SearchPage></SearchPage>}></Route>
           </Route>
           <Route path="*" element={<Error404Page></Error404Page>}></Route>
         </Routes>

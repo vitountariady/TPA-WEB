@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {AiFillHome, AiFillMessage} from 'react-icons/ai'
+import {AiFillHome, AiFillMessage, AiOutlineSearch} from 'react-icons/ai'
 import {BsPeopleFill, BsLinkedin, BsPersonCircle} from 'react-icons/bs'
 import {FaSuitcase} from 'react-icons/fa'
 import {IoMdNotifications} from 'react-icons/io'
@@ -30,7 +30,14 @@ export default function Navbar() {
       <NavLink className="flex-row" to={'/home'}>
         <BsLinkedin className='navbar-logo'></BsLinkedin>
       </NavLink>
-      <input type="text" className='searchbar white-bg' placeholder='Search' />
+      <div className='flex-row mr-120'>
+        <input id='query' type="text" className='searchbar white-bg' placeholder='Search' />
+        <button onClick={()=>{
+          navigate(`/search/${(document.getElementById("query") as HTMLInputElement).value}`)
+        }} className='send-button'>
+          <AiOutlineSearch className='icon-white'></AiOutlineSearch>
+        </button>
+      </div>
       <div className='navbar-menu-container'>
         <NavLink to="/home" className= {handleActivePage}>
           <AiFillHome className='navbar-icon'></AiFillHome>

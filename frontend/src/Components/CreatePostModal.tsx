@@ -1,4 +1,4 @@
-import {MdInsertPhoto, MdVideoLibrary} from 'react-icons/Md'
+import {MdDelete, MdDeleteOutline, MdInsertPhoto, MdVideoLibrary} from 'react-icons/Md'
 import React, { useState } from 'react'
 import { storage } from '../../firebase.config'
 import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
@@ -11,6 +11,7 @@ import { createPost } from '../../queries/queries'
 export default function CreatePostModal(parameter:any){
     const [Photo, setPhoto] = useState('')
     const [Video, setVideo] = useState('')
+    const [Error, setError] = useState('')
     const userContext = UserAuth();
     const [create] = useMutation(createPost)
 
@@ -38,8 +39,12 @@ export default function CreatePostModal(parameter:any){
 
     const handleCreate = () =>{
         const text  = (document.getElementById("tulisan") as HTMLInputElement).value
+        if(text ===''){
+            setError('Post description cannot be empty')
+            return;
+        }
         create({variables:{text: text, photoURL: Photo, videoURL:Video, posterID: userContext.user.id}}).then(()=>{
-            console.log('success')
+            setError('')
             parameter.refetch();
             parameter.toggle()
         })
@@ -75,15 +80,27 @@ export default function CreatePostModal(parameter:any){
                     <label htmlFor="photo">
                         <MdInsertPhoto className='icon'></MdInsertPhoto>
                     </label>
+                    {(Photo!==''||Video!=='') && (
+                        <label onClick={()=>{
+                            setPhoto('');
+                            setVideo('');
+                        }} htmlFor="">
+                            <MdDelete className='icon mh-30'></MdDelete>
+                        </label>
+                    )}
                     <input onChange={(e)=>{uploadVideo(e)}} style={{display:'none'}} type="file" name="video" id="video" />
                     <input onChange={(e)=>{uploadPhoto(e)}} style={{display:'none'}} type="file" name="photo" id="photo" />
                 </div>
-                
 
-                <div className='w-full flex-row space-evenly'>
+
+                <div className='w-full flex-row space-evenly mb-20'>
                     <button onClick={handleCreate} className='blue-button-smaller text-white'>Save</button>
                     <button onClick={parameter.toggle} className='red-button-smaller text-white'>Cancel</button>
                 </div>
+
+                {Error !='' && (
+                    <p className='text-red text-m bold'>{Error}</p>
+                )}  
             </div>
         </div>
     )

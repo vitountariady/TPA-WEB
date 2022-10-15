@@ -48,6 +48,7 @@ func main() {
 	db.AutoMigrate(&model.Job{})
 	db.AutoMigrate(&model.Post{})
 	db.AutoMigrate(&model.Comment{})
+	db.AutoMigrate(&model.Hashtag{})
 	//===============================
 
 	c := generated.Config{Resolvers: &graph.Resolver{

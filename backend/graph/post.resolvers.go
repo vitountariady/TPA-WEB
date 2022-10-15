@@ -109,6 +109,18 @@ func (r *queryResolver) GetPosts(ctx context.Context, id string, limit int, offs
 	return posts, nil
 }
 
+// SearchPosts is the resolver for the SearchPosts field.
+func (r *queryResolver) SearchPosts(ctx context.Context, query string, limit int, offset int) ([]*model.Post, error) {
+	var posts []*model.Post
+	real_query := "%" + query + "%"
+	err := r.DB.Model(posts).Limit(limit).Offset(offset).Order("timestamp DESC").Find(&posts, "lower(text) like lower(?)", real_query).Error
+	if err != nil {
+		return nil, err
+	} else {
+		return posts, nil
+	}
+}
+
 // Post returns generated.PostResolver implementation.
 func (r *Resolver) Post() generated.PostResolver { return &postResolver{r} }
 

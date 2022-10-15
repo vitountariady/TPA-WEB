@@ -24,7 +24,10 @@ type Query{
   Users: [User!]!
   getUser(id:ID!): User!
   getUserByEmail(email:String!): User!
+  getConnectedUsers(id: String!): [User!]!
   testMiddleware: String! @auth
+  searchUsers(query:String!):[User!]!
+
 }
 
 type Mutation{

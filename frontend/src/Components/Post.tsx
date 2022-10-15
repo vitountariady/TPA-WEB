@@ -1,23 +1,48 @@
-import { useMutation, useQuery } from "@apollo/client"
+import { useLazyQuery, useMutation, useQuery } from "@apollo/client"
 import { useEffect, useState } from "react"
 import { AiFillLike } from "react-icons/ai"
 import { BiCommentDetail } from "react-icons/bi"
 import { useNavigate } from "react-router-dom"
 import { UserAuth } from "../../contexts/authContext"
-import { addComment, getComments, getUserByID, likePost, unlikePost } from "../../queries/queries"
+import { addComment, getAllTags, getComments, getConnectedUser, getUserByID, likePost, makeHashtag, unlikePost } from "../../queries/queries"
 import Comment from "./Comment"
+import {Mention, MentionsInput, SuggestionDataItem} from "react-mentions"
 
 export default function Post (parameter:any){
     const navigate = useNavigate();
     const [openComments, setopenComments] = useState(false);
     const [ThereAreMore, setThereAreMore] = useState(true);
+    const [CommentContent, setCommentContent] = useState("");
     const [Comments, setComments] = useState([]);
     const [like] = useMutation(likePost)
     const [unlike] = useMutation(unlikePost)
     const [comment] = useMutation(addComment)
     const User = useQuery(getUserByID,{variables:{UserID: parameter.post.posterID}})
+    const allTags = useQuery(getAllTags);
     const userContext = UserAuth();
+    const connecteduser = useQuery(getConnectedUser,{variables:{id: userContext.user.id}});
+    const [addTag] = useMutation(makeHashtag);
 
+    var mentionsData: SuggestionDataItem[] = []
+    if(!connecteduser.loading && !connecteduser.error){
+        // console.log(connecteduser.data.getConnectedUsers);
+        connecteduser.data.getConnectedUsers.map((e:any)=>{
+            let x : SuggestionDataItem = {id:e.id, display:`@${e.first_name}${e.last_name}`}
+            mentionsData.push(x)
+        })
+    }
+    
+    var tagsArr:SuggestionDataItem[] = [];
+    if(!allTags.loading && !allTags.error && allTags.data!==undefined){
+        // console.log(allTags.data.getAllTags)
+        allTags.data.getAllTags.map((e:any)=>{
+            // console.log(e);
+            let x : SuggestionDataItem={id:e.id, display: e.text}
+            tagsArr.push(x)
+        })
+    }
+    
+    
     const comments = useQuery(getComments,{
         variables:{
             postID:parameter.post.id,
@@ -26,8 +51,20 @@ export default function Post (parameter:any){
         }
     })
 
+    const createHashtag = (x: String) =>{
+        var y = x.split(' ');
+        var regex = /#[a-z0-9A-Z]+/g
+        var regex2 =/@\[#[a-z0-9A-Z]+/g
+        y.map((e)=>{
+            if(e.match(regex) && !e.match(regex2)){
+                addTag({variables: {text:e}})
+            }
+        })
+    }
+
     const AddComment = () =>{
-        const text  = (document.getElementById("comment") as HTMLInputElement).value
+        const text  = CommentContent;
+        createHashtag(CommentContent);
         comment({variables:{
             text: text,
             replyTo: '',
@@ -35,6 +72,8 @@ export default function Post (parameter:any){
             postID: parameter.post.id
         }}).then(()=>{
             comments.refetch({limit:Comments.length+1})
+            setCommentContent("")
+            allTags.refetch();
         }).catch((err)=>{
             console.log(err)
         })
@@ -114,7 +153,11 @@ export default function Post (parameter:any){
                         <>
                             <div className="flex-row mv-30 w-80">
                                 <img onClick={()=>{navigate(`/profile/${User.data.getUser.id}`)}} src={User.data.getUser.profile_picture_url} className="homepage-picture mh-10" alt="" />
-                                <input id="comment" type="text" className="chat-input" placeholder="Comment"/>
+                                <MentionsInput value={CommentContent} onChange={(e)=>{setCommentContent(e.target.value);console.log(mentionsData)}} placeholder="Comment" className="chat-input" id="comment">
+                                    <Mention trigger="@" data={mentionsData}/>
+                                    <Mention trigger="#" data={tagsArr}/>
+                                </MentionsInput>
+                                {/* <input id="comment" type="text" className="chat-input" placeholder="Comment"/> */}
                                 <button onClick={AddComment} className="send-button">Send</button>
                             </div>
                             {Comments.length>0 && (
@@ -126,7 +169,7 @@ export default function Post (parameter:any){
                                 <>
                                     {Comments.map((comment:any)=>{
                                         return(
-                                            <Comment key={comment.id} comment ={comment} post={parameter.post}></Comment>
+                                            <Comment refetch = {comments.refetch} key={comment.id} comment ={comment} post={parameter.post} length={Comments.length}></Comment>
                                         )
                                     })}
                                     {ThereAreMore && (

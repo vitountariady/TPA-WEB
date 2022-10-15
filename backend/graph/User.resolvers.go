@@ -182,9 +182,34 @@ func (r *queryResolver) GetUserByEmail(ctx context.Context, email string) (*mode
 	return service.GetUserByEmail(ctx, email)
 }
 
+// GetConnectedUsers is the resolver for the getConnectedUsers field.
+func (r *queryResolver) GetConnectedUsers(ctx context.Context, id string) ([]*model.User, error) {
+	x, _ := service.GetUserById(ctx, id)
+	var users []*model.User
+	var array []string
+	array = x.ConnectedUser
+	err := r.DB.Model(users).Find(&users, "id in (?)", array).Error
+	if err != nil {
+		return nil, err
+	}
+	return users, nil
+}
+
 // TestMiddleware is the resolver for the testMiddleware field.
 func (r *queryResolver) TestMiddleware(ctx context.Context) (string, error) {
 	return "Success", nil
+}
+
+// SearchUsers is the resolver for the searchUsers field.
+func (r *queryResolver) SearchUsers(ctx context.Context, query string) ([]*model.User, error) {
+	var users []*model.User
+	real_query := "%" + query + "%"
+	err := r.DB.Model(users).Find(&users, "lower(first_name) like lower(?) or lower(last_name) like lower(?)", real_query, real_query).Error
+	if err != nil {
+		return nil, err
+	} else {
+		return users, nil
+	}
 }
 
 // FollowedUser is the resolver for the followed_user field.

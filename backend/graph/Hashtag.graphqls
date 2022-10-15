@@ -1,0 +1,13 @@
+type Hashtag{
+    id: ID!
+    text: String!
+}
+
+extend type Query{
+    getPostsWithTags(text: String): [Post!]!
+    getAllTags: [Hashtag!]!
+}
+
+extend type Mutation{
+    addHashtag(text: String!): String!
+}
