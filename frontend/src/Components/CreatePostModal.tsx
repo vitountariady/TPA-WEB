@@ -7,6 +7,7 @@ import { UserAuth } from '../../contexts/authContext'
 import { useMutation, useQuery } from '@apollo/client'
 import { createPost, getAllTags, getConnectedUser } from '../../queries/queries'
 import { Mention, MentionsInput, SuggestionDataItem } from 'react-mentions'
+import { mentionInputPostStyle, mentionStyle } from '../StyleSheet/mentionStyle'
 
 
 export default function CreatePostModal(parameter:any){
@@ -75,15 +76,15 @@ export default function CreatePostModal(parameter:any){
 
     return(
         <div className="modal center-all">
-            <div className="small-form">
+            <div className="small-form overflow-y">
                 <div className='w-full flex-row mb-20'>
                     <p className='text-black text-l bold mh-20'>Create a Post</p>
                 </div>
                 <div className='w-full center-col mb-20'>
                     {/* <textarea id='tulisan' style={{resize:"none",width:"340px", borderRadius:"5px", height:"100px",padding:"10px"}} placeholder="What do you want to talk about"></textarea> */}
-                    <MentionsInput style={{resize:"none",width:"340px", borderRadius:"5px", height:"100px",padding:"10px"}} value={Tulisan} onChange={(e)=>{setTulisan(e.target.value);console.log(mentionsData)}} placeholder="What do you want to talk about" className="chat-input" id="comment">
-                        <Mention trigger="@" data={mentionsData}/>
-                        <Mention trigger="#" data={tagsArr}/>
+                    <MentionsInput style={{width:"340px", height:"100px", color: "#000000" , ...mentionInputPostStyle}} value={Tulisan} onChange={(e)=>{setTulisan(e.target.value);console.log(mentionsData)}} placeholder="What do you want to talk about" id="comment">
+                        <Mention trigger="@" data={mentionsData} style={mentionStyle}/>
+                        <Mention trigger="#" data={tagsArr} style={mentionStyle}/>
                     </MentionsInput>
                 </div>
 

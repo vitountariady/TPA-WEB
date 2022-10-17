@@ -1,17 +1,22 @@
 import { useLazyQuery, useMutation, useQuery } from "@apollo/client"
 import { useEffect, useState } from "react"
 import { AiFillLike } from "react-icons/ai"
-import { BiCommentDetail } from "react-icons/bi"
+import { BiCommentDetail, BiShare } from "react-icons/bi"
 import { useNavigate } from "react-router-dom"
 import { UserAuth } from "../../contexts/authContext"
 import { addComment, getAllTags, getComments, getConnectedUser, getUserByID, likePost, makeHashtag, unlikePost } from "../../queries/queries"
 import Comment from "./Comment"
 import {Mention, MentionsInput, SuggestionDataItem} from "react-mentions"
 import CommentContentTemplate from "../CommentContent"
+import { mentionInputPostStyle, mentionStyle } from "../StyleSheet/mentionStyle"
+import SharePostModal from "./SharePostModal"
+import { IoIosSend } from "react-icons/io"
+import { BsFillShareFill, BsShare } from "react-icons/bs"
 
 export default function Post (parameter:any){
     const navigate = useNavigate();
     const [openComments, setopenComments] = useState(false);
+    const [Share, setShare] = useState(false)
     const [ThereAreMore, setThereAreMore] = useState(true);
     const [CommentContent, setCommentContent] = useState("");
     const [Comments, setComments] = useState([]);
@@ -81,6 +86,14 @@ export default function Post (parameter:any){
     }
 
     useEffect(() => {
+        if(Share === true){
+            document.body.style.overflow="hidden";
+        }else{
+            document.body.style.overflow = "visible"
+        }
+    }, [Share])
+
+    useEffect(() => {
         if(!comments.loading && !comments.error){
             if(comments.data.getComments.length<5){
                 setThereAreMore(false)
@@ -115,15 +128,18 @@ export default function Post (parameter:any){
         ).catch((err)=>{console.log(err)})
     }
 
-    const toggleComment = () =>[
+    const toggleComment = () =>{
         setopenComments(!openComments)
-    ]
+    }
+    const toggleShare = () =>{
+        setShare(!Share)
+    }
 
     return(
         <div className="post white-bg center-col mv-10">
              {(!User.loading && !User.error) && (
                 <>
-                    <div className="w-full flex-row mb-30">
+                    <div className="w-full flex-row">
                         <img onClick={()=>{navigate(`/profile/${User.data.getUser.id}`)}} src={User.data.getUser.profile_picture_url} className="homepage-picture mh-10" alt="" />
                         <p className="text-black text-m bold mh-10">{User.data.getUser.first_name} {User.data.getUser.last_name}</p>
                     </div>
@@ -149,15 +165,19 @@ export default function Post (parameter:any){
                         </div>
                         <div className="mh-20 center-row mh-20">
                             <BiCommentDetail onClick={toggleComment} className="icon"/>
+                            <div className="mh-10"></div>
+                        </div>
+                        <div className="mh-20 center-row mh-20">
+                            <BsShare onClick={toggleShare} className="icon"/>
                         </div>
                     </div>
                     {openComments && (
                         <>
                             <div className="flex-row mv-30 w-80">
                                 <img onClick={()=>{navigate(`/profile/${userContext.user.id}`)}} src={userContext.user.profile_picture_url} className="homepage-picture mh-10" alt="" />
-                                <MentionsInput value={CommentContent} onChange={(e)=>{setCommentContent(e.target.value);console.log(mentionsData)}} placeholder="Comment" className="chat-input" id="comment">
-                                    <Mention trigger="@" data={mentionsData}/>
-                                    <Mention trigger="#" data={tagsArr}/>
+                                <MentionsInput style={{color: "#000000" , ...mentionInputPostStyle}} value={CommentContent} onChange={(e)=>{setCommentContent(e.target.value);console.log(mentionsData)}} placeholder="Comment" className="chat-input" id="comment">
+                                    <Mention trigger="@" data={mentionsData} style={mentionStyle}/>
+                                    <Mention trigger="#" data={tagsArr} style={mentionStyle}/>
                                 </MentionsInput>
                                 {/* <input id="comment" type="text" className="chat-input" placeholder="Comment"/> */}
                                 <button onClick={AddComment} className="send-button">Send</button>
@@ -182,6 +202,9 @@ export default function Post (parameter:any){
                         </>
                     )}
                 </>
+             )}
+             {Share && (
+                <SharePostModal post= {parameter.post} toggle={toggleShare}></SharePostModal>
              )}
              {User.loading && (
                 <>

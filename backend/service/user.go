@@ -26,6 +26,7 @@ func UserCreate(ctx context.Context, input model.NewUser) (*model.User, error) {
 		FollowedUser:      emptyStringArr,
 		ConnectedUser:     emptyStringArr,
 		ConnectRequest:    emptyStringArr,
+		BlockedUser:       emptyStringArr,
 	}
 
 	err := db.Model(user).Create(&user).Error

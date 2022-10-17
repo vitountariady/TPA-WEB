@@ -7,6 +7,7 @@ import { useNavigate } from "react-router-dom"
 import { UserAuth } from "../../contexts/authContext";
 import { addComment, getAllTags, getConnectedUser, getUserByID, likeComment, loadReplies, unlikeComment } from "../../queries/queries"
 import CommentContentTemplate from "../CommentContent";
+import { mentionStyle } from "../StyleSheet/mentionStyle";
 
 export default function Comment (parameter:any) {
     const [Replies, setReplies] = useState([])
@@ -161,8 +162,8 @@ export default function Comment (parameter:any) {
                     <img onClick={()=>{navigate(`/profile/${User.data.getUser.id}`)}} src={User.data.getUser.profile_picture_url} className="homepage-picture mh-10" alt="" />
                     {/* <input id="reply" type="text" className="chat-input" placeholder="Reply"/> */}
                     <MentionsInput value={CommentContent} onChange={(e)=>{setCommentContent(e.target.value); console.log(mentionsData)}} placeholder="Comment" className="chat-input" id="comment">
-                        <Mention trigger="@" data={mentionsData}/>
-                        <Mention trigger="#" data={tagsArr}/>
+                        <Mention trigger="@" data={mentionsData} style={mentionStyle}/>
+                        <Mention trigger="#" data={tagsArr} style={mentionStyle}/>
                     </MentionsInput>
                     <button onClick={AddComment} className="send-button">Send</button>
                 </div>

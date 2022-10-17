@@ -14,4 +14,5 @@ type User struct {
 	FollowedUser      pq.StringArray `json:"followed_user" gorm:"type:text[]"`
 	ConnectedUser     pq.StringArray `json:"connected_user" gorm:"type:text[]"`
 	ConnectRequest    pq.StringArray `json:"connect_request" gorm:"type:text[]"`
+	BlockedUser       pq.StringArray `json:"blocked_user" gorm:"type:text[]"`
 }

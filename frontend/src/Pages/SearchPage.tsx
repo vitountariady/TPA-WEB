@@ -8,6 +8,7 @@ import Post from '../Components/Post'
 
 export default function SearchPage() {
   const userContext = UserAuth();
+  const [Filter, setFilter] = useState('all')
   const [Posts, setPosts] = useState([]);
   const [Users, setUsers] = useState([]);
   const [Loading, setLoading] = useState(true);
@@ -27,6 +28,7 @@ export default function SearchPage() {
     if(!posts.loading && !posts.error){
       setPosts(posts.data.SearchPosts)
     }
+    setHasMore(true)
   },[posts.loading, posts.error,searchQuery])
 
   useEffect(() => {
@@ -60,16 +62,54 @@ export default function SearchPage() {
         <Navbar></Navbar>
         {/* <UsersSearchTab users= {Users}></UsersSearchTab> */}
 
+        <div className=' mv-30 w-50 center-row space-around'>
+          {Filter==='all' && (
+            <button className='blue-button-smaller text-white'>
+              All
+            </button>
+          )}
+          {Filter!=='all' && (
+            <button onClick={()=>{setFilter('all')}} className='white-button-smaller text-white'>
+              All
+            </button>
+          )}
+          {Filter==='user' && (
+            <button className='blue-button-smaller text-white'>
+              User
+            </button>
+          )}
+           {Filter!=='user' && (
+            <button onClick={()=>{setFilter('user')}} className='white-button-smaller text-white'>
+              User
+            </button>
+          )}
+          {Filter==='post' && (
+            <button className='blue-button-smaller text-white'>
+              Post
+            </button>
+          )}
+           {Filter!=='post' && (
+            <button onClick={()=>{setFilter('post')}} className='white-button-smaller text-white'>
+              Post
+            </button>
+          )}
+        </div>
+
+        {(Filter === 'all' || Filter==='user') && (
         <div className='main-container white-bg center-col mv-20'>
             <p className='text-l text-black mb-20'>Users</p>
             {Users.length > 0 && (
               <>
                 {Users.map((user:any)=>{
                 if(user.id == userContext.user.id){
-                  return
+                  return(
+                    <div key={user.id}>
+
+                    </div>
+                  )
                 }
                 return(
-                    <div className='w-80 border-sering-pake mv-10 flex-row space-around'>
+                    <div key={user.id} className='w-80 border-sering-pake mv-10 flex-row space-around'>
                         <div className='flex-row' onClick={()=>{navigate(`/profile/${user.id}`)}}>
                           <img className='profile-picture-small p-10' src={user.profile_picture_url} alt=""/>
                           <p className='text-black bold text-m text-center'>{user.first_name +" "+user.last_name}</p>
@@ -92,13 +132,14 @@ export default function SearchPage() {
                 <p className='text-black text-s w-full mv-20'>Empty</p>
             )}
         </div>
+        )}
 
-        <div className='main-container white-bg center-col mv-20'>
+        {(Filter==='all' || Filter ==='post')&&(
+          <div className='main-container white-bg center-col mv-20'>
             <p className='text-l text-black mb-20'>Posts</p>
             {Posts.length > 0 && (
               <>
                 {Posts.map((post:any)=>{
-                    console.log(post)
                     return(
                         <Post key={post.id} post={post} refetch={posts.refetch} length={Posts.length}></Post>
                     )
@@ -109,6 +150,7 @@ export default function SearchPage() {
                 <p className='text-black text-s w-full mv-20'>Empty</p>
             )}
         </div>
+        )}
     </div>
   )
 }

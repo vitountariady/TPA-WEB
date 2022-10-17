@@ -166,6 +166,17 @@ func (r *mutationResolver) UpdateName(ctx context.Context, newFirstName string, 
 	return service.UpdateName(ctx, id, newFirstName, newLastName)
 }
 
+// Block is the resolver for the Block field.
+func (r *mutationResolver) Block(ctx context.Context, id string, blockedID string) (string, error) {
+	x, err := service.GetUserById(ctx, id)
+	if err != nil {
+		return "gagal", err
+	}
+	x.BlockedUser = append(x.BlockedUser, blockedID)
+	// panic(fmt.Errorf("not implemented"))
+	return "blocked", r.DB.Save(x).Error
+}
+
 // Users is the resolver for the Users field.
 func (r *queryResolver) Users(ctx context.Context) ([]*model.User, error) {
 	panic(fmt.Errorf("not implemented"))
@@ -225,6 +236,11 @@ func (r *userResolver) ConnectedUser(ctx context.Context, obj *model.User) ([]st
 // ConnectRequest is the resolver for the connect_request field.
 func (r *userResolver) ConnectRequest(ctx context.Context, obj *model.User) ([]string, error) {
 	return obj.ConnectRequest, nil
+}
+
+// BlockedUser is the resolver for the blocked_user field.
+func (r *userResolver) BlockedUser(ctx context.Context, obj *model.User) ([]string, error) {
+	return obj.BlockedUser, nil
 }
 
 // Mutation returns generated.MutationResolver implementation.

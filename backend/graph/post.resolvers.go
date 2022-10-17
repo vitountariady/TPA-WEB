@@ -84,6 +84,15 @@ func (r *postResolver) Likes(ctx context.Context, obj *model.Post) ([]string, er
 	return obj.Likes, nil
 }
 
+// GetPostByID is the resolver for the GetPostByID field.
+func (r *queryResolver) GetPostByID(ctx context.Context, id string) (*model.Post, error) {
+	var post *model.Post
+	if err := r.DB.First(&post, "id =? ", id).Error; err != nil {
+		return nil, err
+	}
+	return post, nil
+}
+
 // GetPosts is the resolver for the GetPosts field.
 func (r *queryResolver) GetPosts(ctx context.Context, id string, limit int, offset int) ([]*model.Post, error) {
 	var posts []*model.Post

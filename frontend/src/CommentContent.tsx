@@ -10,7 +10,7 @@ const CommentContentTemplate = ({ texts , font}: { texts: string[]; font:string 
     const MentionRichText = /@[a-z0-9A-Z]+/g
     const URLRichText = /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._]{2,1000}\.\b([a-zA-Z0-9@:%_\+.#?&//=]*)/g
     return (
-        <p className={`text-black mb-20 mh-15 text-${font}`}>
+        <p className={`text-black mb-20 mh-15 text-m}`}>
             {
                 texts.map((text) => {
                     if (text.match(HastagRichText2)) {

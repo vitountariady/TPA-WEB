@@ -119,7 +119,8 @@ export const getUserByID = gql`
       banner_url,
       followed_user,
       connected_user,
-      connect_request
+      connect_request,
+      blocked_user
     }
   }
 `
@@ -410,4 +411,21 @@ query getConnectedUsers ($id:String!){
     	  connected_user
   }
 }
+`
+
+export const blockUser = gql`
+  mutation BlockUser($id:String!, $blockedUser:String!){
+    Block(id:$id, blockedID:$blockedUser)
+  }
+`
+
+export const getPostByID = gql`
+  query getPostByID ($id:String!){
+    GetPostByID(id:$id){
+      text,
+      photoURL,
+      videoURL,
+      posterID
+    }
+  }
 `

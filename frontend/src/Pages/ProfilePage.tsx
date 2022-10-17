@@ -2,29 +2,35 @@ import React, { useEffect, useState } from 'react'
 import { UserAuth } from '../../contexts/authContext'
 import Navbar from '../Components/Navbar'
 import { getDownloadURL, getStorage,ref, uploadBytes } from "firebase/storage";
-import {storage} from "../../firebase.config"
+import {db, storage} from "../../firebase.config"
 import { useMutation, useQuery } from '@apollo/client';
-import { follow, getUserByID, getUserEducation, getUserExperience, requestConnect, unfollow, uploadBanner, uploadProfilePicture } from '../../queries/queries';
+import { blockUser, follow, getUserByID, getUserEducation, getUserExperience, requestConnect, unfollow, uploadBanner, uploadProfilePicture } from '../../queries/queries';
 import { AiFillEdit, AiOutlinePlus } from 'react-icons/ai';
 import CreateEducationModal from '../Components/CreateEducationModal';
 import Education from '../Components/Education';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Error404Page from './Error404Page';
 import CreateExperienceModal from '../Components/CreateExperienceModal';
 import Experience from '../Components/Experience';
 import { RefetchContext } from '../../contexts/refetcher';
 import UpdateNameModal from '../Components/UpdateNameModal';
 import Footer from '../Components/MyFooter';
+import { addDoc, collection, getDocs, query, where } from 'firebase/firestore';
+import { BsShare } from 'react-icons/bs';
+import ShareUserModal from '../Components/ShareUserModal';
 
 export default function ProfilePage() {
   const userContext = UserAuth();
   const userID = useParams().id
   const [Error, setError] = useState(false)
+  const [Share, setShare] = useState(false)
   const [uploadProfile] = useMutation(uploadProfilePicture)
   const [bannerUpload] = useMutation(uploadBanner)
   const [requestConnection] = useMutation(requestConnect)
   const [Follow] = useMutation(follow)
   const [Unfollow] = useMutation(unfollow)
+  const [block] = useMutation(blockUser)
+
   const [EducationModal, setEducationModal] = useState(false);
   const [ExperienceModal, setExperienceModal] = useState(false);
   const [NameModal, setNameModal] = useState(false);
@@ -39,8 +45,11 @@ export default function ProfilePage() {
     banner_url: "",
     connect_request:[''],
     connected_user:[''],
-    followed_user:['']
+    followed_user:[''],
+    blocked_user:[''],
   })
+
+  const navigate = useNavigate();
 
   const education = useQuery(getUserEducation,{variables:{UserID:User.id}})
   const user = useQuery(getUserByID,{variables:{UserID: userID}})
@@ -86,6 +95,34 @@ export default function ProfilePage() {
   const toggleNameModal = () =>{
     setNameModal(!NameModal)
   }
+
+  const toggleShare = () =>{
+    setShare(!Share)
+  }
+
+  
+  const createRoom = (target:string) =>{
+    const q = query(collection(db,"ChatRoom"),where('users', 'array-contains', userContext.user.id))
+    let udahAda= false
+    let id = ''
+    getDocs(q).then((documents:any)=>{
+        documents.docs.forEach((document:any)=>{
+            if(document.data().users.includes(target)){
+                udahAda = true
+                id = document.id
+                navigate('/message/'+id)
+            }
+        })
+        if(!udahAda){
+            addDoc(collection(db, "ChatRoom"),{
+                users: [userContext.user.id, target]
+            }).then((e)=>{
+                id = e.id
+                navigate('/message/'+id)
+            })
+        }
+    })
+}
 
   useEffect(() => {
     if(EducationModal === true||ExperienceModal===true){
@@ -137,6 +174,9 @@ export default function ProfilePage() {
     <>
  
     <div className='beige-bg fullscreen center-col page'>
+        {Share === true && (
+          <ShareUserModal toggle={toggleShare} user ={User}></ShareUserModal>
+        )}
         {EducationModal === true && (
           <CreateEducationModal refetch={education.refetch} toggle={toggleCreateEducation}></CreateEducationModal>
           )}
@@ -152,9 +192,9 @@ export default function ProfilePage() {
               <div className='w-full flex-row'>
                 <label htmlFor="banner" className='w-fit h-65'>
                   {MyProfile && (
-                        <div className='picture-btn text-bg'>
-                            <AiFillEdit className='logo'></AiFillEdit>
-                        </div>
+                    <div className='picture-btn text-bg'>
+                      <AiFillEdit className='logo'></AiFillEdit>
+                    </div>
                   )}
                   </label>
               </div>
@@ -169,6 +209,7 @@ export default function ProfilePage() {
               {MyProfile && (
                 <AiFillEdit onClick={toggleNameModal} className='icon m-20'></AiFillEdit>
               )}
+              <BsShare onClick={toggleShare} className='icon m-20'></BsShare>
             </div>
             {UserExperiences.map((experience:any)=>{
               if(experience.Active){
@@ -205,6 +246,18 @@ export default function ProfilePage() {
                 <div>
                   <button onClick={()=>{Unfollow({variables:{id: userContext.user.id, unfollow:User.id}}).then(()=>{refetchContext.refetchUser()})}} className='white-button-smaller text-white mh-10'>Followed</button>
                 </div>
+              )}
+
+              {(MyProfile!=true && !userContext.user.blocked_user.includes(User.id)) && (
+                <div>
+                 <button onClick={()=>{block({variables:{id: userContext.user.id, blockedUser: User.id}}).then(()=>{refetchContext.refetchUser()})}} className='red-button-smaller text-white mh-10'>Block</button>
+               </div>
+              )}
+
+              {(userContext.user.connected_user.includes(User.id) &&MyProfile!=true && !userContext.user.blocked_user.includes(User.id)) && (
+                <div>
+                 <button onClick={()=>{createRoom(User.id)}} className='white-button-smaller text-white mh-10'>Message</button>
+               </div>
               )}
             </div>
         </div>
@@ -246,7 +299,6 @@ export default function ProfilePage() {
           })}
         </div>
     </div>
-    <Footer></Footer>
     </>
   )
 }

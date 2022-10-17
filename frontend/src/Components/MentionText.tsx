@@ -11,7 +11,7 @@ export default function MentionText({ text }: { text: string }) {
     let userIdSubString = text.substring(firstIndexUserId + 1, lastIndexUserId)
 
     return (
-        <span className="text-black text-m">
+        <span className="text-black text-s">
         <Link to={`/profile/${userIdSubString}`}>{mentionTagSubString} &nbsp;</Link>
         </span>
     )

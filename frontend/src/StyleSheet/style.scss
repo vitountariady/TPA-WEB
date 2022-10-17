@@ -62,6 +62,16 @@ $beige: #f3f2ef;
     color: $grey;
 }
 
+.text-special{
+    color: #000000;
+    :hover{
+        color:$blue-light
+    }
+    :active{
+        color:$blue-dark
+    }
+}
+
 p{
     margin: 0;
     padding:0; 
@@ -223,6 +233,13 @@ p{
     }
 }
 
+.preview-picture{
+    width:30px;
+    height: 30px;
+    border-radius: 100%;
+    border: 1px black solid
+}
+
 .homepage-picture{
     min-width:50px;
     max-height: 50px;
@@ -342,6 +359,7 @@ p{
     background-color: $white;
     margin-bottom:30px;
     min-height: 250px;
+    max-height: 500px;
     min-width:400px;
     border-radius: 15px;
     display: flex;
@@ -464,8 +482,16 @@ p{
     width: 30%;
 }
 
+.w-50{
+    width: 50%;
+}
+
 .w-80{
     width: 80%;
+}
+
+.w-90{
+    width: 90%;
 }
 
 .w-fit{
@@ -497,8 +523,26 @@ p{
     height: 10%;
 }
 
+.h-20{
+    height: 20%;
+}
+
 .h-15{
     height: 15%;
+}
+
+.h-70{
+    height: 70%;
+}
+.h-77{
+    height: 77%;
+}
+.h-80{
+    height: 80%;
+}
+
+.h-85{
+    height: 85%;
 }
 
 .h-90{
@@ -509,8 +553,8 @@ p{
     min-height: 65px;
 }
 
-.h-450{
-    height: 450px;
+.h-500{
+    height: 500px;
 }
 
 .max-h-full{
@@ -519,6 +563,10 @@ p{
 
 .h-500{
     min-height: 500px;
+}
+
+.h-fit{
+    height: fit-content;
 }
 
 //spacing
@@ -769,6 +817,10 @@ p{
     padding-top: 5px;
     padding-bottom: 5px;
 }
+.pv-10{
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
 .pv-20{
     padding-top: 20px;
     padding-bottom: 20px;
@@ -850,6 +902,7 @@ p{
     overflow-y: auto;
 }
 
+
 //borders
 .border-sering-pake{
     border: 1px solid $grey-dark;
@@ -859,4 +912,57 @@ p{
 //position
 .abs{
     position: absolute;
+}
+
+.message1{
+    width: 95%;
+    display: flex;
+    padding: 5px;
+    flex-direction: row-reverse;
+    color: $black;
+    margin-bottom: 10px;
+}
+
+.message2{
+    width: 95%;
+    display: flex;
+    padding: 5px;
+    flex-direction: row;
+    color: $white;
+    margin-bottom: 10px;
+}
+
+.messagebubble1{
+    min-width: 80px;
+    height: 20px;
+    border-radius: 35px;
+    width: fit-content;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: #ffffff;
+    border: 1px solid black
+}
+.messagebubble2{
+    display: flex;
+    flex-direction: column;
+    min-width: 80px;
+    height: 20px;
+    border-radius: 35px;
+    width: fit-content;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    background-color: $blue-light;
+}
+
+.PostPreview{
+    width: 250px;
+    min-height: 100px;
+    max-height: 350px;
+    display: flex;
+    border-radius: 20px;
+    border: 1px solid black
 }
